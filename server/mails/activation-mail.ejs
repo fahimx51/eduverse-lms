@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Activate Your EduVerse Account</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrapper {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .brand-header {
+            background: #6366f1;
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .body-content {
+            padding: 40px;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        .code-box {
+            background: #f3f4f6;
+            color: #6366f1;
+            font-size: 32px;
+            font-weight: 800;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            letter-spacing: 4px;
+        }
+
+        .footer-text {
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="brand-header">
+            <h1 style="margin:0;">EduVerse</h1>
+            <p style="margin:5px 0 0; opacity: 0.9;">Your Learning Universe</p>
+        </div>
+        <div class="body-content">
+            <h2 style="margin-top: 0;">Welcome, <%= user.name %>!</h2>
+            <p>Ready to start your learning journey? Please use the activation code below to verify your account and
+                access your dashboard.</p>
+
+            <div class="code-box">
+                <%= activationCode %>
+            </div>
+
+            <p>This code will expire shortly. If you did not create an account on EduVerse, please ignore this email.
+            </p>
+        </div>
+        <div class="footer-text">
+            Sent with ❤️ from the EduVerse Team.
+        </div>
+    </div>
+</body>
+
+</html>
