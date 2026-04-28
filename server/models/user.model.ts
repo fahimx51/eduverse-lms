@@ -73,12 +73,12 @@ userSchema.pre<IUser>('save', async function (next) {
 
 //sign access token
 userSchema.methods.SignAccessToken = function (): string {
-    return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || '');
+    return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || '', { expiresIn: '5m' });
 }
 
 //sign refresh token
 userSchema.methods.SignRefreshToken = function (): string {
-    return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || '');
+    return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN || '', { expiresIn: '7d' });
 }
 
 //Compare user entered password with hashed password in database

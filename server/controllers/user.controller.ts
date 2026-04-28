@@ -3,11 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import User, { IUser } from '../models/user.model';
 import { CatchAsyncErrors } from '../middleware/catchAsyncErrors';
 import ErrorHandler from '../utils/ErrorHandler';
-import jwt, { Secret } from 'jsonwebtoken';
+import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import path from 'node:path';
 import ejs from 'ejs';
 import sendMail from '../utils/sendMail';
-import { sendToken } from '../utils/jwt';
+import { accessTokenOptions, refreshTokenOptions, sendToken } from '../utils/jwt';
 import { redis } from '../utils/redis';
 
 dotenv.config();
@@ -167,5 +167,46 @@ export const logoutUser = CatchAsyncErrors(async (req: Request, res: Response, n
     }
     catch (error: any) {
         return next(new ErrorHandler('Failed to logout', 500));
+    }
+});
+
+//update acceess token
+export const updateAccessToken = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const refresh_token = req.cookies.refreshToken as string;
+
+        if (!refresh_token) {
+            return next(new ErrorHandler('Unauthorized: No refresh token provided', 401));
+        }
+
+        const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN as string) as JwtPayload;
+
+        if (!decoded) {
+            return next(new ErrorHandler('Unauthorized: Invalid refresh token', 401));
+        }
+
+        const user = await redis.get(decoded.id as string);
+
+        if (!user) {
+            return next(new ErrorHandler('Unauthorized: User not found', 401));
+        }
+
+        const parsedUser = JSON.parse(user);
+
+        const accessToken = jwt.sign({ id: parsedUser._id }, process.env.ACCESS_TOKEN as string, { expiresIn: '5m' });
+
+        const refreshToken = jwt.sign({ id: parsedUser._id }, process.env.REFRESH_TOKEN as string, { expiresIn: '7d' });
+
+        res.cookie('accessToken', accessToken, accessTokenOptions);
+        res.cookie('refreshToken', refreshToken, refreshTokenOptions);
+
+        res.status(200).json({
+            success: true,
+            accessToken
+        });
+    }
+    catch (error: any) {
+        console.log("Token refresh error:", error.message);
+        return next(new ErrorHandler('Failed to refresh access token', 500));
     }
 });

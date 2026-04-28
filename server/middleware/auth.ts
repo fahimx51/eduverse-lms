@@ -28,3 +28,18 @@ export const isAuthenticated = CatchAsyncErrors(async (req: Request, res: Respon
 
     next();
 });
+
+//validate user role
+export const authorizeRoles = (...roles: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        if (!req.user) {
+            return next(new ErrorHandler('Unauthorized: No user found', 401));
+        }
+
+        if (!roles.includes(req.user?.role)) {
+            return next(new ErrorHandler(`Forbidden: ${req.user?.role} is not allowed to access this resource`, 403));
+        }
+
+        next();
+    }
+};
