@@ -18,6 +18,7 @@ app.use(cors({
     origin: process.env.ORIGIN
 }));
 
+
 app.use('/api/user', userRouter);
 
 // testing api
@@ -30,7 +31,7 @@ app.get("/api/test", (req: Request, res: Response, next: NextFunction) => {
 
 // unknown route
 app.all("{*any}", (req: Request, res: Response, next: NextFunction) => {
-    next(new ErrorHandler(`Route ${req.originalUrl} not found!`, 404))
+    next(new ErrorHandler(`Route ${req.originalUrl} not found!`, 404));
 });
 
 // error middleware
