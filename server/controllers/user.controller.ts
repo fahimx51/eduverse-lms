@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { Request, Response, NextFunction } from 'express';
-import User, { IUser } from '../models/user.model';
+import userModel, { IUser } from '../models/user.model';
 import { CatchAsyncErrors } from '../middleware/catchAsyncErrors';
 import ErrorHandler from '../utils/ErrorHandler';
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
@@ -9,6 +9,7 @@ import ejs from 'ejs';
 import sendMail from '../utils/sendMail';
 import { accessTokenOptions, refreshTokenOptions, sendToken } from '../utils/jwt';
 import { redis } from '../utils/redis';
+import { getUserById } from '../services/user.service';
 
 dotenv.config();
 
@@ -23,7 +24,7 @@ interface IRegistrationBody {
 export const registerUser = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     const { name, email, password }: IRegistrationBody = req.body;
 
-    const isEmailExist = await User.findOne({ email });
+    const isEmailExist = await userModel.findOne({ email });
 
     if (isEmailExist) {
         return next(new ErrorHandler('Email already exists', 400));
@@ -92,13 +93,13 @@ export const activateUser = CatchAsyncErrors(async (req: Request, res: Response,
 
         const { name, email, password } = newUser.user;
 
-        const existingUser = await User.findOne({ email });
+        const existingUser = await userModel.findOne({ email });
 
         if (existingUser) {
             return next(new ErrorHandler('Email already exists', 400));
         }
 
-        const user = await User.create({ name, email, password });
+        const user = await userModel.create({ name, email, password });
 
         res.status(201).json({
             success: true,
@@ -125,7 +126,7 @@ export const loginUser = CatchAsyncErrors(async (req: Request, res: Response, ne
             return next(new ErrorHandler('Please provide email and password', 400));
         }
 
-        const user = await User.findOne({ email }).select('+password');
+        const user = await userModel.findOne({ email }).select('+password');
 
         if (!user) {
             return next(new ErrorHandler('Invalid email or password', 401));
@@ -155,7 +156,7 @@ export const logoutUser = CatchAsyncErrors(async (req: Request, res: Response, n
         const userId = req.user?._id;
 
         if (!userId) {
-            return next(new ErrorHandler("User not found", 404));
+            return next(new ErrorHandler("userModel not found", 404));
         }
 
         await redis.del(userId.toString());
@@ -188,7 +189,7 @@ export const updateAccessToken = CatchAsyncErrors(async (req: Request, res: Resp
         const user = await redis.get(decoded.id as string);
 
         if (!user) {
-            return next(new ErrorHandler('Unauthorized: User not found', 401));
+            return next(new ErrorHandler('Unauthorized: userModel not found', 401));
         }
 
         const parsedUser = JSON.parse(user);
@@ -208,5 +209,22 @@ export const updateAccessToken = CatchAsyncErrors(async (req: Request, res: Resp
     catch (error: any) {
         console.log("Token refresh error:", error.message);
         return next(new ErrorHandler('Failed to refresh access token', 500));
+    }
+});
+
+//get user info
+export const getUserInfo = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user?._id;
+
+        if (!userId) {
+            return next(new ErrorHandler("user not found", 404));
+        }
+
+        getUserById(userId.toString(), res);
+    }
+    catch (error: any) {
+        console.log("Get user info error:", error.message);
+        return next(new ErrorHandler('Failed to get user info', 500));
     }
 });
