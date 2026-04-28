@@ -228,3 +228,38 @@ export const getUserInfo = CatchAsyncErrors(async (req: Request, res: Response, 
         return next(new ErrorHandler('Failed to get user info', 500));
     }
 });
+
+interface ISocialAuthBody {
+    email: string;
+    name: string;
+    avatar: string;
+}
+
+//social Auth
+export const socialAuth = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { name, email, avatar } = req.body as ISocialAuthBody;
+        console.log(req.body);
+
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            const newUser = await userModel.create({
+                name,
+                email,
+                avatar: {
+                    public_id: 'social_auth_avatar',
+                    url: avatar
+                }
+            });
+            sendToken(newUser, 201, res);
+        }
+        else {
+            sendToken(user, 200, res);
+        }
+    }
+    catch (error: any) {
+        console.log("Social auth error:", error.message);
+        return next(new ErrorHandler('Failed to authenticate with social account', 500));
+    }
+});
