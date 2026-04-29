@@ -10,6 +10,8 @@ import sendMail from '../utils/sendMail';
 import { accessTokenOptions, refreshTokenOptions, sendToken } from '../utils/jwt';
 import { redis } from '../utils/redis';
 import { getUserById } from '../services/user.service';
+import { v2 as cloudinary } from 'cloudinary'
+import uploadOnCloudinary from '../utils/cloudinary';
 
 dotenv.config();
 
@@ -239,7 +241,6 @@ interface ISocialAuthBody {
 export const socialAuth = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { name, email, avatar } = req.body as ISocialAuthBody;
-        console.log(req.body);
 
         const user = await userModel.findOne({ email });
 
@@ -248,7 +249,7 @@ export const socialAuth = CatchAsyncErrors(async (req: Request, res: Response, n
                 name,
                 email,
                 avatar: {
-                    public_id: 'social_auth_avatar',
+                    public_id: '',
                     url: avatar
                 }
             });
@@ -263,3 +264,151 @@ export const socialAuth = CatchAsyncErrors(async (req: Request, res: Response, n
         return next(new ErrorHandler('Failed to authenticate with social account', 500));
     }
 });
+
+
+interface IUpdateUserInfo {
+    name: string;
+    email: string;
+}
+
+//update user info
+export const updateUserInfo = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { name, email } = req.body as IUpdateUserInfo
+        const userId = req.user?._id
+
+        if (!userId) {
+            return next(new ErrorHandler("User not found", 404))
+        }
+
+        if (email) {
+            const isEmailExist = await userModel.findOne({
+                email,
+                _id: { $ne: userId }
+            })
+            if (isEmailExist) {
+                return next(new ErrorHandler('Email already exists', 400))
+            }
+        }
+
+        const user = await userModel.findById(userId)
+
+        if (!user) {
+            return next(new ErrorHandler("User not found", 404))
+        }
+
+        if (name) user.name = name
+        if (email) user.email = email
+
+        await user.save()
+
+        await redis.set(userId.toString(), JSON.stringify(user))
+
+        res.status(200).json({
+            success: true,
+            user
+        })
+    }
+    catch (error: any) {
+        return next(new ErrorHandler(error.message, 500))
+    }
+});
+
+//update user password
+interface IUpdatePassword {
+    oldPassword: string;
+    newPassword: string;
+}
+
+export const updateUserPassword = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { oldPassword, newPassword } = req.body as IUpdatePassword;
+        const userId = req.user?._id;
+
+        if (!oldPassword || !newPassword) {
+            return next(new ErrorHandler("Please provide old and new password", 400));
+        }
+
+        if (!userId) {
+            return next(new ErrorHandler("access token expired", 404));
+        }
+
+        const user = await userModel.findById(userId).select('+password');
+
+
+        if (!user) {
+            return next(new ErrorHandler("User not found", 404));
+        }
+
+        if (user.password === undefined) {
+            return next(new ErrorHandler("User does not have a password set", 400));
+        }
+
+        const isOldPasswordMatched = await user.comparePassword(oldPassword);
+
+        if (!isOldPasswordMatched) {
+            return next(new ErrorHandler('Old password is incorrect', 400));
+        }
+
+        user.password = newPassword;
+
+        await user.save();
+        await redis.set(userId.toString(), JSON.stringify(user));
+
+        res.status(200).json({
+            success: true,
+            message: 'Password updated successfully'
+        });
+    }
+    catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+    }
+});
+
+//update profile picture
+export const updateProfilePicture = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const file = req.file  // ← multer
+
+      if(!file) {
+        return next(new ErrorHandler("Please provide an image", 400))
+      }
+
+      const userId = req.user?._id
+      const user = await userModel.findById(userId)
+
+      if(!user) {
+        return next(new ErrorHandler("User not found", 404))
+      }
+
+      // Delete old avatar from cloudinary
+      if(user?.avatar?.public_id) {
+        await cloudinary.uploader.destroy(user.avatar.public_id)
+      }
+
+      // Upload new avatar
+      const uploaded = await uploadOnCloudinary(file.buffer, file.mimetype)
+
+      if(!uploaded) {
+        return next(new ErrorHandler("Failed to upload image", 500))
+      }
+
+      user.avatar = {
+        public_id: uploaded.public_id, 
+        url: uploaded.url
+      }
+
+      await user.save()
+      await redis.set(userId!.toString(), JSON.stringify(user))
+
+      res.status(200).json({
+        success: true,
+        user
+      })
+    }
+    catch(error: any) {
+      return next(new ErrorHandler(error.message, 500))
+    }
+  }
+)
