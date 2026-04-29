@@ -75,7 +75,7 @@ export const getSingleCourse = CatchAsyncErrors(async (req: Request, res: Respon
 
         if (isCacheExist) {
             const course = JSON.parse(isCacheExist);
-            return res.status(200).json({
+            res.status(200).json({
                 success: true,
                 course
             });
@@ -100,12 +100,27 @@ export const getSingleCourse = CatchAsyncErrors(async (req: Request, res: Respon
 //get all courses -- without purchasing
 export const getAllCourses = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const courses = await courseModel.find().select("-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links");
+        const isCacheExist = await redis.get('allCourses');
 
-        res.status(200).json({
-            success: true,
-            courses
-        });
+        if (isCacheExist) {
+            const courses = JSON.parse(isCacheExist);
+            
+            res.status(200).json({
+                success: true,
+                courses
+            });
+        }
+        else {
+            const courses = await courseModel.find().select("-courseData.videoUrl -courseData.suggestions -courseData.questions -courseData.links");
+
+            await redis.set('allCourses', JSON.stringify(courses), 'EX', 60 * 60 * 24);
+
+            res.status(200).json({
+                success: true,
+                courses
+            });
+        }
+
     }
     catch (error: any) {
         return next(new ErrorHandler(error.message || 'Failed to get courses', 500));
