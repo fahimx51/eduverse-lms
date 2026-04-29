@@ -367,48 +367,48 @@ export const updateUserPassword = CatchAsyncErrors(async (req: Request, res: Res
 
 //update profile picture
 export const updateProfilePicture = CatchAsyncErrors(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const file = req.file  // ← multer
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const file = req.file  // ← multer
 
-      if(!file) {
-        return next(new ErrorHandler("Please provide an image", 400))
-      }
+            if (!file) {
+                return next(new ErrorHandler("Please provide an image", 400))
+            }
 
-      const userId = req.user?._id
-      const user = await userModel.findById(userId)
+            const userId = req.user?._id
+            const user = await userModel.findById(userId)
 
-      if(!user) {
-        return next(new ErrorHandler("User not found", 404))
-      }
+            if (!user) {
+                return next(new ErrorHandler("User not found", 404))
+            }
 
-      // Delete old avatar from cloudinary
-      if(user?.avatar?.public_id) {
-        await cloudinary.uploader.destroy(user.avatar.public_id)
-      }
+            // Delete old avatar from cloudinary
+            if (user?.avatar?.public_id) {
+                await cloudinary.uploader.destroy(user.avatar.public_id)
+            }
 
-      // Upload new avatar
-      const uploaded = await uploadOnCloudinary(file.buffer, file.mimetype)
+            // Upload new avatar
+            const uploaded = await uploadOnCloudinary(file.buffer, file.mimetype, 'eduverse/avatars');
 
-      if(!uploaded) {
-        return next(new ErrorHandler("Failed to upload image", 500))
-      }
+            if (!uploaded) {
+                return next(new ErrorHandler("Failed to upload image", 500))
+            }
 
-      user.avatar = {
-        public_id: uploaded.public_id, 
-        url: uploaded.url
-      }
+            user.avatar = {
+                public_id: uploaded.public_id,
+                url: uploaded.url
+            }
 
-      await user.save()
-      await redis.set(userId!.toString(), JSON.stringify(user))
+            await user.save()
+            await redis.set(userId!.toString(), JSON.stringify(user))
 
-      res.status(200).json({
-        success: true,
-        user
-      })
+            res.status(200).json({
+                success: true,
+                user
+            })
+        }
+        catch (error: any) {
+            return next(new ErrorHandler(error.message, 500))
+        }
     }
-    catch(error: any) {
-      return next(new ErrorHandler(error.message, 500))
-    }
-  }
 )
