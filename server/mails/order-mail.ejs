@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #37a39a;
+            padding-bottom: 10px;
+        }
+
+        .content {
+            padding: 20px 0;
+        }
+
+        .order-details {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #37a39a;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Confirmed!</h1>
+        </div>
+        <div class="content">
+            <p>Hello,</p>
+            <p>Thank you for your purchase! We’ve successfully processed your order for <strong>
+                    <%= order.name %>
+                </strong>.</p>
+
+            <div class="order-details">
+                <h3 style="margin-top: 0;">Order Summary</h3>
+                <div class="order-row">
+                    <span>Order ID:</span>
+                    <strong>#<%= order._id %></strong>
+                </div>
+                <div class="order-row">
+                    <span>Date:</span>
+                    <strong>
+                        <%= order.date %>
+                    </strong>
+                </div>
+                <div class="order-row">
+                    <span>Amount Paid:</span>
+                    <strong>$<%= order.price %></strong>
+                </div>
+            </div>
+
+            <p>You can now access your course materials from your dashboard.</p>
+            <div style="text-align: center;">
+                <a href="https://your-eduverse-domain.com/dashboard" class="button">Go to Dashboard</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>If you have any questions, feel free to contact our support team.</p>
+            <p>&copy; 2026 EduVerse LMS. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+
+</html>
