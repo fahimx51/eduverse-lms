@@ -6,8 +6,6 @@ import { createCourse } from '../services/course.service';
 import courseModel from '../models/course.model';
 import { redis } from '../utils/redis';
 import mongoose from 'mongoose';
-import ejs from 'ejs';
-import path from 'node:path';
 import sendMail from '../utils/sendMail';
 
 //upload course
@@ -272,4 +270,106 @@ export const addAnswer = CatchAsyncErrors(async (req: Request, res: Response, ne
     catch (error: any) {
         return next(new ErrorHandler(error.message, 500));
     }
+});
+
+//add review in course
+interface IAddReviewData {
+    user: object;
+    rating: number;
+    review: string;
+}
+export const addReview = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const courseId = req.params.id;
+        const userCourseList = req.user?.courses;
+
+        const isCourseExist = userCourseList?.some((course: any) => course._id.toString() === courseId.toString());
+
+        if (!isCourseExist) {
+            return next(new ErrorHandler("You're not eligible to add review in this course.", 404));
+        }
+
+        const course = await courseModel.findById(courseId);
+
+        if (!course) {
+            return next(new ErrorHandler("Course is not exist anymore.", 404));
+        }
+
+        const { rating, review } = req.body as IAddReviewData;
+
+        const reviewData: any = {
+            user: req.user,
+            rating,
+            comment: review,
+            commentReplies: []
+        };
+
+        course.reviews.push(reviewData);
+
+        let avg = 0;
+
+        course.reviews.forEach((rev: any) => {
+            avg += rev.rating
+        });
+
+        course.ratings = avg / course.reviews?.length;
+
+        await course.save();
+
+        const notification = {
+            title: "New Review Received",
+            message: `${req.user?.name} has given a review in ${course.name}`
+        };
+
+        //create notification
+
+        res.status(200).json({
+            success: true,
+            course
+        });
+    }
+    catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+    }
+});
+
+//add reply in review
+interface IAddReviewReplyData {
+    comment: string,
+    courseId: string,
+    reviewId: string,
+}
+export const addReplyToReview = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { comment, courseId, reviewId } = req.body as IAddReviewReplyData;
+        const course = await courseModel.findById(courseId);
+
+        if (!course) {
+            return next(new ErrorHandler("Course is not exist anymore.", 404));
+        }
+
+        const targetedReview = course.reviews.find((rev: any) => rev._id.toString() === reviewId.toString());
+
+        if (!targetedReview) {
+            return next(new ErrorHandler("Review is not exist anymore.", 404));
+        }
+
+        const replyData : any = {
+            user: req.user,
+            question: comment
+        };
+
+        targetedReview.commentReplies.push(replyData);
+
+        await course.save();
+
+        res.status(200).json({
+            success: true,
+            course
+        });
+    }
+    catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+    }
+
 });
