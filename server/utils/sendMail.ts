@@ -24,7 +24,7 @@ const sendMail = async (options: IMailOptions): Promise<void> => {
     const { email, subject, template, data } = options;
 
     //get the path of the email template
-    const templatePath = path.join(__dirname, `../mails/activation-mail.ejs`);
+    const templatePath = path.join(__dirname, `../mails/${template}`);
 
     //render the email template with the provided data
     const html = await ejs.renderFile(templatePath, data);
