@@ -1,5 +1,5 @@
 import express from 'express';
-import { activateUser, getUserInfo, loginUser, logoutUser, registerUser, socialAuth, updateAccessToken, updateProfilePicture, updateUserInfo, updateUserPassword } from '../controllers/user.controller';
+import { activateUser, deleteUser, getAllUser, getUserInfo, loginUser, logoutUser, registerUser, socialAuth, updateAccessToken, updateProfilePicture, updateUserInfo, updateUserPassword, updateUserRole } from '../controllers/user.controller';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
 import { upload } from '../middleware/multer';
 
@@ -17,5 +17,11 @@ userRouter.get('/me', isAuthenticated, getUserInfo);
 userRouter.put('/update-user-info', isAuthenticated, updateUserInfo);
 userRouter.put('/update-user-password', isAuthenticated, updateUserPassword);
 userRouter.put('/update-user-avatar', upload.single('avatar'), isAuthenticated, updateProfilePicture);
+
+userRouter.get('/get-all-users', isAuthenticated, authorizeRoles('admin'), getAllUser);
+
+userRouter.put('/update-user-role', isAuthenticated, authorizeRoles('admin'), updateUserRole);
+
+userRouter.delete('/delete-user/:id', isAuthenticated, authorizeRoles('admin'), deleteUser);
 
 export default userRouter; 

@@ -11,3 +11,12 @@ export const createCourse = CatchAsyncErrors(async (data: any, res: Response) =>
         course
     });
 });
+
+//get all courses
+export const getAllCourseService = async (res: Response) => {
+    const courses = await courseModel.find().sort({ createdAt: -1 });
+    return res.status(200).json({
+        success: true,
+        courses
+    });
+};
