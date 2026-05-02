@@ -8,6 +8,7 @@ import ErrorHandler from './utils/ErrorHandler';
 import userRouter from './routes/user.route';
 import courseRouter from './routes/course.route';
 import orderRouter from './routes/order.route';
+import notificationRouter from './routes/notification.route';
 
 //body parser
 app.use(express.json({ limit: '50mb' }));
@@ -24,6 +25,7 @@ app.use(cors({
 app.use('/api/user', userRouter);
 app.use('/api/course', courseRouter);
 app.use('/api/order', orderRouter);
+app.use('/api/notification', notificationRouter);
 
 // testing api
 app.get("/api/test", (req: Request, res: Response, next: NextFunction) => {

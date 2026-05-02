@@ -7,6 +7,7 @@ import courseModel from '../models/course.model';
 import { redis } from '../utils/redis';
 import mongoose from 'mongoose';
 import sendMail from '../utils/sendMail';
+import notificationModel from '../models/notification.model';
 
 //upload course
 export const uploadCourse = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
@@ -186,6 +187,13 @@ export const addQuestion = CatchAsyncErrors(async (req: Request, res: Response, 
         //add this question to the course content
         courseContent.questions.push(newQuestion);
 
+        //create notification 
+        await notificationModel.create({
+            user: req.user?._id.toString(),
+            title: "New Question Received!",
+            message: `You have new question in  ${courseContent.title}`
+        });
+
         //save the updated course
         await course?.save();
 
@@ -241,6 +249,11 @@ export const addAnswer = CatchAsyncErrors(async (req: Request, res: Response, ne
 
         if (req.user?._id === question.user._id) {
             //create a notification
+            await notificationModel.create({
+                user: req.user?._id.toString(),
+                title: "Question Replied!",
+                message: `Your question has been replied in ${courseContent.title}`
+            });
         }
         else {
             const data = {
@@ -354,7 +367,7 @@ export const addReplyToReview = CatchAsyncErrors(async (req: Request, res: Respo
             return next(new ErrorHandler("Review is not exist anymore.", 404));
         }
 
-        const replyData : any = {
+        const replyData: any = {
             user: req.user,
             question: comment
         };
