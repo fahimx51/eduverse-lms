@@ -187,7 +187,7 @@ export const updateAccessToken = CatchAsyncErrors(async (req: Request, res: Resp
         const user = await redis.get(decoded.id as string);
 
         if (!user) {
-            return next(new ErrorHandler('Unauthorized: userModel not found', 401));
+            return next(new ErrorHandler('Please login to access this resources!', 401));
         }
 
         const parsedUser = JSON.parse(user);
@@ -198,6 +198,8 @@ export const updateAccessToken = CatchAsyncErrors(async (req: Request, res: Resp
 
         res.cookie('accessToken', accessToken, accessTokenOptions);
         res.cookie('refreshToken', refreshToken, refreshTokenOptions);
+
+        await redis.set(parsedUser._id.toString(), JSON.stringify(parsedUser) as any,  "EX", 7 * 24 * 60 * 60 ); // 7day expiration
 
         res.status(200).json({
             success: true,
