@@ -19,6 +19,8 @@
   --breakpoint-400px: 400px;
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 .hero_animation {
   background-image: linear-gradient(147.92deg, hsla(239, 76%, 53%, 0.456) 10.41%, hsla(0, 0%, 100%, 0) 89.25%);
   animation: changeBackgroundColor 8s infinite alternate;
