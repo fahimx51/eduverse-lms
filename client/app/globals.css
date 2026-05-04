@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  /* Font Families */
+  --font-poppins: var(--font-Poppins);
+  --font-josefin: var(--font-Josefin);
+
+  /* Background Images (Gradients) */
+  --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
+  --background-image-gradient-conic: conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops));
+
+  /* Custom Breakpoints (Screens) */
+  --breakpoint-1000px: 1000px;
+  --breakpoint-1100px: 1100px;
+  --breakpoint-1200px: 1200px;
+  --breakpoint-1300px: 1300px;
+  --breakpoint-1500px: 1500px;
+  --breakpoint-800px: 800px;
+  --breakpoint-400px: 400px;
+}
