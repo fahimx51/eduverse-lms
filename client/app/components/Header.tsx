@@ -4,14 +4,20 @@ import React, { useState } from 'react'
 import NavItems from '../utils/NavItems';
 import ThemeSwitcher from '../utils/ThemeSwitcher';
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi"
+import CustomModal from '../utils/CustomModal';
+import Login from './Auth/Login';
+import SignUp from './Auth/SignUp';
+import Verfication from './Auth/Verfication';
 
 type Props = {
     open: boolean;
     setOpen: (open: boolean) => void;
     activeItem: number;
+    route: string;
+    setRoute: (route: string) => void;
 }
 
-export default function Header({ open, setOpen, activeItem }: Props) {
+export default function Header({ open, setOpen, activeItem, route, setRoute }: Props) {
     const [active, setActive] = useState(false);
     const [openSidebar, setOpenSidebar] = useState(false);
 
@@ -93,6 +99,58 @@ export default function Header({ open, setOpen, activeItem }: Props) {
                     )
                 }
             </div>
+            {
+                route === "Login" && (
+                    <>
+                        {
+                            open && (
+                                <CustomModal
+                                    open={open}
+                                    setOpen={setOpen}
+                                    activeItem={activeItem}
+                                    component={Login}
+                                    setRoute={setRoute}
+                                />
+                            )
+                        }
+                    </>
+                )
+            }
+
+            {
+                route === "Sign-Up" && (
+                    <>
+                        {
+                            open && (
+                                <CustomModal
+                                    open={open}
+                                    setOpen={setOpen}
+                                    activeItem={activeItem}
+                                    component={SignUp}
+                                    setRoute={setRoute}
+                                />
+                            )
+                        }
+                    </>
+                )
+            }
+            {
+                route === "Verfication" && (
+                    <>
+                        {
+                            open && (
+                                <CustomModal
+                                    open={open}
+                                    setOpen={setOpen}
+                                    activeItem={activeItem}
+                                    component={Verfication}
+                                    setRoute={setRoute}
+                                />
+                            )
+                        }
+                    </>
+                )
+            }
         </div>
     )
 }

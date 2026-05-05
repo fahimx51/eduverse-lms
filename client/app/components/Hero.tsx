@@ -4,9 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { HiOutlineSearch } from 'react-icons/hi';
 
-type Props = {}
-
-export default function Hero({ }: Props) {
+export default function Hero() {
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleSearch = (e: React.FormEvent) => {

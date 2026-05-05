@@ -5,13 +5,14 @@ import Heading from './utils/Heading'
 import Header from './components/Header';
 import Hero from './components/Hero';
 
-interface Props {
-  data: string;
-}
+// interface Props {
+//   data: string;
+// }
 
-export default function Page(props: Props) {
+export default function Page() {
   const [open, setOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(1);
+  const [route, setRoute] = useState('Login');
 
   return (
     // Added h-screen and overflow-hidden here to lock the viewport
@@ -22,7 +23,7 @@ export default function Page(props: Props) {
         keywords="Programming, Web Development, Machine Learning, MERN Stack"
       />
 
-      <Header open={open} setOpen={setOpen} activeItem={activeItem} />
+      <Header open={open} setOpen={setOpen} activeItem={activeItem} setRoute={setRoute} route={route} />
 
       {/* 
           Ensure your Hero component inside is using 
