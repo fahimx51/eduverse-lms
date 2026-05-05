@@ -19,11 +19,16 @@
   --breakpoint-400px: 400px;
 }
 
-/* Remove input arrows */
+/* Hide arrows for Chrome, Safari, Edge, and Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* Hide arrows for Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));

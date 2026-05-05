@@ -1,8 +1,10 @@
 'use client'
-import React, { useState, useRef } from 'react'
-import { toast } from 'react-hot-toast';
+import React, { useState, useRef, useEffect } from 'react'
 import { styles } from '../../styles/style';
 import { VscWorkspaceTrusted } from 'react-icons/vsc';
+import { useActivationMutation } from '../../../redux/features/auth/authApi';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-hot-toast';
 
 type Props = {
     setRoute: (route: string) => void
@@ -13,20 +15,33 @@ type VerifyNumber = {
     "1": string,
     "2": string,
     "3": string,
-    "4": string,
 }
 
 export default function Verfication({ setRoute }: Props) {
     const [invalidError, setInvalidError] = useState(false);
+    const { token } = useSelector((state) => state.auth);
+    const [activation, { isSuccess, error }] = useActivationMutation();
+
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Verification successful");
+            setRoute('Login');
+        }
+
+        if (error) {
+            toast.error(error?.data?.message || "Something went wrong");
+        }
+    }, [isSuccess, error]);
+
+    // Matched to 4 inputs
     const inputRefs = [
-        useRef<HTMLInputElement>(null),
         useRef<HTMLInputElement>(null),
         useRef<HTMLInputElement>(null),
         useRef<HTMLInputElement>(null),
         useRef<HTMLInputElement>(null),
     ];
 
-    const [verifyNumber, setVerifyNumber] = useState<verifyNumber>({
+    const [verifyNumber, setVerifyNumber] = useState<VerifyNumber>({
         "0": "",
         "1": "",
         "2": "",
@@ -34,7 +49,17 @@ export default function Verfication({ setRoute }: Props) {
     });
 
     const verificationHandler = async () => {
-        setInvalidError(true);
+        const verificationNumber = Object.values(verifyNumber).join("");
+
+        if (verificationNumber.length !== 4) {
+            setInvalidError(true);
+            return;
+        }
+
+        await activation({
+            activationToken: token,
+            activationCode: verificationNumber
+        });
     };
 
     const handleInputChange = (index: number, value: string) => {
@@ -52,24 +77,23 @@ export default function Verfication({ setRoute }: Props) {
 
     return (
         <div>
-            <h1 className={`${styles.title}`}>
-                Verify Your Account
-            </h1>
+            <h1 className={`${styles.title}`}>Verify Your Account</h1>
             <br />
             <div className='w-full flex items-center justify-center mt-2'>
                 <div className='w-[80px] h-[80px] rounded-full bg-[#497DF2] flex items-center justify-center'>
-                    <VscWorkspaceTrusted size={40} />
+                    <VscWorkspaceTrusted size={40} className="text-white" />
                 </div>
             </div>
             <br />
             <br />
-            <div className=' m-auto flex items-center justify-around'>
+            <div className='m-auto flex items-center justify-around'>
                 {Object.keys(verifyNumber).map((key, index) => (
                     <input
                         key={key}
                         type="number"
-                        ref={inputRefs[key]}
-                        className={`w-[65px] h-[65px] bg-transparent border-[3px] rounded-[10px] flex items-center text-black dark:text-white justify-center text-[18px] font-poppins outline-none text-center ${invalidError ? "shake border-red-500" : "dark:border-white border-[#0000004a]"} }`}
+                        ref={inputRefs[index]}
+                        className={`w-[65px] h-[65px] bg-transparent border-[3px] rounded-[10px] flex items-center text-black dark:text-white justify-center text-[18px] font-poppins outline-none text-center ${invalidError ? "shake border-red-500" : "dark:border-white border-[#0000004a]"
+                            }`} // ✅ Fixed extra bracket here
                         placeholder=""
                         maxLength={1}
                         value={verifyNumber[key as keyof VerifyNumber]}
@@ -78,25 +102,18 @@ export default function Verfication({ setRoute }: Props) {
                 ))}
             </div>
             <br />
-            <br />
             <div className='w-full flex justify-center'>
-                <button
-                    className={`${styles.button}`}
-                    onClick={verificationHandler}
-                >
+                <button className={`${styles.button}`} onClick={verificationHandler}>
                     Verify
                 </button>
             </div>
             <br />
             <h5 className='text-center pt-4 font-poppins text-[14px] text-black dark:text-white'>
                 Go back to sign in?
-                <span
-                    className='text-[#2190ff] pl-1 cursor-pointer'
-                    onClick={() => setRoute('Login')}
-                >
+                <span className='text-[#2190ff] pl-1 cursor-pointer' onClick={() => setRoute('Login')}>
                     Sign In
                 </span>
             </h5>
-        </div >
+        </div>
     )
 }

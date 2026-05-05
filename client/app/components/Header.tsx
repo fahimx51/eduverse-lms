@@ -1,13 +1,13 @@
 "use client"
 import Link from 'next/link';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import NavItems from '../utils/NavItems';
 import ThemeSwitcher from '../utils/ThemeSwitcher';
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi"
 import CustomModal from '../utils/CustomModal';
 import Login from './Auth/Login';
 import SignUp from './Auth/SignUp';
-import Verfication from './Auth/Verfication';
+import Verification from './Auth/Verification';
 
 type Props = {
     open: boolean;
@@ -21,15 +21,19 @@ export default function Header({ open, setOpen, activeItem, route, setRoute }: P
     const [active, setActive] = useState(false);
     const [openSidebar, setOpenSidebar] = useState(false);
 
-    if (typeof window !== "undefined") {
-        window.addEventListener("scroll", () => {
+    useEffect(() => {
+        const handleScroll = () => {
             if (window.scrollY > 80) {
                 setActive(true);
             } else {
                 setActive(false);
             }
-        });
-    }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        // Cleanup function to remove listener when component unmounts
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []); // Empty array means this runs ONLY ONCE
 
     const handleClose = (e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
@@ -135,7 +139,7 @@ export default function Header({ open, setOpen, activeItem, route, setRoute }: P
                 )
             }
             {
-                route === "Verfication" && (
+                route === "Verification" && (
                     <>
                         {
                             open && (
@@ -143,7 +147,7 @@ export default function Header({ open, setOpen, activeItem, route, setRoute }: P
                                     open={open}
                                     setOpen={setOpen}
                                     activeItem={activeItem}
-                                    component={Verfication}
+                                    component={Verification}
                                     setRoute={setRoute}
                                 />
                             )
