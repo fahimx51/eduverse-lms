@@ -65,7 +65,7 @@ interface IActivationToken {
 }
 
 export const createActivationToken = (user: any): IActivationToken => {
-    const activationCode: string = Math.floor(100000 + Math.random() * 900000).toString();
+    const activationCode: string = Math.floor(1000 + Math.random() * 9000).toString();
     const token = jwt.sign({ user, activationCode }, process.env.JWT_SECRET as Secret, { expiresIn: '5m' });
 
     return { token, activationCode };
@@ -199,7 +199,7 @@ export const updateAccessToken = CatchAsyncErrors(async (req: Request, res: Resp
         res.cookie('accessToken', accessToken, accessTokenOptions);
         res.cookie('refreshToken', refreshToken, refreshTokenOptions);
 
-        await redis.set(parsedUser._id.toString(), JSON.stringify(parsedUser) as any,  "EX", 7 * 24 * 60 * 60 ); // 7day expiration
+        await redis.set(parsedUser._id.toString(), JSON.stringify(parsedUser) as any, "EX", 7 * 24 * 60 * 60); // 7day expiration
 
         res.status(200).json({
             success: true,
