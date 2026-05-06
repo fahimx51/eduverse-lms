@@ -8,6 +8,11 @@ import CustomModal from '../utils/CustomModal';
 import Login from './Auth/Login';
 import SignUp from './Auth/SignUp';
 import Verification from './Auth/Verification';
+import { useSelector } from 'react-redux'
+import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import { useSocialAuthMutation } from '../../redux/features/auth/authApi';
+import { toast } from 'react-hot-toast';
 
 type Props = {
     open: boolean;
@@ -20,6 +25,39 @@ type Props = {
 export default function Header({ open, setOpen, activeItem, route, setRoute }: Props) {
     const [active, setActive] = useState(false);
     const [openSidebar, setOpenSidebar] = useState(false);
+    const { user } = useSelector((state) => state.auth);
+    const [socialAuth, { isSuccess }] = useSocialAuthMutation();
+
+    const { data } = useSession();
+
+    console.log("data => ", data);
+
+    console.log("user is => ", user);
+
+
+    useEffect(() => {
+        const handleSocialAuth = async () => {
+            // 1. Only run if we have NextAuth data AND Redux is empty
+            if (!user && data) {
+                try {
+                    // 2. Wait for the API to finish
+                    await socialAuth({
+                        email: data.user?.email,
+                        name: data.user?.name,
+                        avatar: data.user?.image
+                    }).unwrap();
+
+                    // 3. ONLY toast once the promise resolves
+                    toast.success("Logged in successfully");
+                } catch (error) {
+                    console.error("Social auth failed:", error);
+                }
+            }
+        };
+
+        handleSocialAuth();
+    }, [data, user]); // Note: We do NOT put isSuccess here anymore
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -68,11 +106,28 @@ export default function Header({ open, setOpen, activeItem, route, setRoute }: P
                                 />
                             </div>
 
-                            <HiOutlineUserCircle
-                                size={25}
-                                className='hidden 800px:block cursor-pointer dark:text-white text-black'
-                                onClick={() => setOpen(true)}
-                            />
+                            {
+                                user ? (
+                                    <Link href="/profile">
+                                        <Image
+                                            src={user.avatar?.url || "/avatar.jpeg"}
+                                            width={30}
+                                            height={30}
+                                            alt='profile_image'
+                                            className='rounded-full cursor-pointer'
+                                        >
+
+                                        </Image>
+                                    </Link>
+                                ) : (
+                                    <HiOutlineUserCircle
+                                        size={25}
+                                        className='hidden 800px:block cursor-pointer dark:text-white text-black'
+                                        onClick={() => setOpen(true)}
+                                    />
+                                )
+                            }
+
                         </div>
                     </div>
                 </div>

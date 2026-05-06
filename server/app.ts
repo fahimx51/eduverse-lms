@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 //cors 
 app.use(cors({
-    origin: "http://localhost:3000", // Hard-code it temporarily
+    origin: ["http://localhost:3000"],
     credentials: true
 }));
 
@@ -41,9 +41,7 @@ app.get("/api/test", (req: Request, res: Response, next: NextFunction) => {
 });
 
 // unknown route
-app.all("{*any}", (req: Request, res: Response, next: NextFunction) => {
-    next(new ErrorHandler(`Route ${req.originalUrl} not found!`, 404));
-});
+
 
 // error middleware
 app.use(ErrorMiddleware);

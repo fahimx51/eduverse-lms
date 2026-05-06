@@ -1,13 +1,17 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { AiOutlineEye, AiOutlineEyeInvisible, AiFillGithub } from 'react-icons/ai'
 import { FcGoogle } from 'react-icons/fc'
 import { styles } from '../../styles/style'
+import { useLoginMutation } from '../../../redux/features/auth/authApi'
+import { toast } from 'react-hot-toast'
+import { signIn } from 'next-auth/react'
 
 type Props = {
-    setRoute: (route: string) => void
+    setRoute: (route: string) => void,
+    setOpen: (open: boolean) => void
 }
 
 const schema = Yup.object({
@@ -15,8 +19,9 @@ const schema = Yup.object({
     password: Yup.string().required('Please enter your password').min(6, 'Password must be at least 6 characters long')
 })
 
-export default function Login({ setRoute }: Props) {
+export default function Login({ setRoute, setOpen }: Props) {
     const [show, setShow] = useState(false);
+    const [login, { isLoading, isSuccess, error }] = useLoginMutation();
 
     const formik = useFormik({
         initialValues: {
@@ -25,10 +30,19 @@ export default function Login({ setRoute }: Props) {
         },
         validationSchema: schema,
         onSubmit: async ({ email, password }) => {
-            console.log(email, password);
-            setRoute('Verfication');
+            await login({ email, password });
         }
     });
+
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Login successfully!");
+            setOpen(false);
+        }
+        if (error) {
+            toast.error(error?.data?.message || "Something went wrong");
+        }
+    }, [isSuccess, error]);
 
     const { errors, touched, values, handleChange, handleSubmit } = formik;
 
@@ -89,7 +103,7 @@ export default function Login({ setRoute }: Props) {
                     }
 
                 </div>
-                    {errors.password && touched.password && (<span className='text-red-500 pt-2 block'>{errors.password}</span>)}
+                {errors.password && touched.password && (<span className='text-red-500 pt-2 block'>{errors.password}</span>)}
 
                 <div className='w-full mt-5'>
                     <input
@@ -103,8 +117,16 @@ export default function Login({ setRoute }: Props) {
                     Or join with
                 </h5>
                 <div className='flex items-center justify-center my-3'>
-                    <FcGoogle size={30} className='cursor-pointer mr-2 ' />
-                    <AiFillGithub size={30} className='cursor-pointer ml-2 dark:text-white' />
+                    <FcGoogle
+                        size={30}
+                        className='cursor-pointer mr-2 '
+                        onClick={() => signIn('google')}
+                    />
+                    <AiFillGithub
+                        size={30}
+                        className='cursor-pointer ml-2 dark:text-white'
+                        onClick={() => signIn('github')}
+                    />
                 </div>
 
                 <h5 className='text-center pt-4 font-poppins text-[14px] text-black dark:text-white'>
