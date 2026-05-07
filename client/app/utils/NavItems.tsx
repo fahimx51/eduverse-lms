@@ -1,68 +1,53 @@
+"use client";
 import Link from 'next/link';
-import React from 'react'
+import React from 'react';
+import { usePathname } from 'next/navigation';
 
 type Props = {
-    activeItem: number;
     isMobile: boolean;
-}
+};
 
 export const navItemsData = [
-    {
-        name: "Home",
-        url: "/",
-    },
-    {
-        name: "Courses",
-        url: "/courses",
-    },
-    {
-        name: "About",
-        url: "/about",
-    },
-    {
-        name: "Policy",
-        url: "/policy",
-    },
-    {
-        name: "FAQ",
-        url: "/faq",
-    },
+    { name: "Home", url: "/" },
+    { name: "Courses", url: "/courses" },
+    { name: "About", url: "/about" },
+    { name: "Policy", url: "/policy" },
+    { name: "FAQ", url: "/faq" },
 ];
 
-export default function NavItems({ activeItem, isMobile }: Props) {
+export default function NavItems({ isMobile }: Props) {
+    const pathname = usePathname();
+
     return (
         <>
             <div className='hidden 800px:flex'>
-                {
-                    navItemsData && navItemsData.map((item, index) => (
-                        <Link href={`${item.url}`} key={index} passHref>
-                            <span className={`${activeItem === index ? "dark:text-[#37a39a] text-[crimson] " : "dark:text-white text-black"} font-poppins text-[18px] px-6 font-[400] `}>
+                {navItemsData.map((item, index) => (
+                    <Link href={item.url} key={index} passHref>
+                        <span className={`${pathname === item.url
+                            ? "dark:text-[#37a39a] text-[crimson]"
+                            : "dark:text-white text-black"
+                            } font-poppins text-[18px] px-6 font- cursor-pointer`}>
+                            {item.name}
+                        </span>
+                    </Link>
+                ))}
+            </div>
+
+            {isMobile && (
+                <div className='800px:hidden mt-5'>
+                    {/* ... your mobile title ... */}
+                    {navItemsData.map((item, index) => (
+                        <Link href={item.url} key={index} passHref>
+                            <span className={`${pathname === item.url
+                                ? "dark:text-[#37a39a] text-[crimson]"
+                                : "dark:text-white text-black"
+                                } block font-poppins text-[18px] py-5 px-6 font-`}>
                                 {item.name}
                             </span>
                         </Link>
-                    ))
-                }
-            </div >
-            {
-                isMobile && (
-                    <div className='800px:hidden mt-5'>
-                        <div className='w-full text-center py-6'>
-                            <Link href="/" className='text-[25px] font-poppins font-[500] text-black dark:text-white' >
-                                EduVerse
-                            </Link>
-                        </div>
-                        {
-                            navItemsData && navItemsData.map((item, index) => (
-                                <Link href="/" passHref key={index}>
-                                    <span className={`${activeItem === index ? "dark:text-[#37a39a] text-[crimson] " : "dark:text-white text-black"} block font-poppins text-[18px] py-5 px-6 font-[400] `}>
-                                        {item.name}
-                                    </span>
-                                </Link>
-                            ))
-                        }
-                    </div>
-                )
-            }
+                    ))}
+                </div>
+            )}
         </>
-    )
+    );
 }

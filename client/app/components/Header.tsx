@@ -13,27 +13,20 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useSocialAuthMutation } from '../../redux/features/auth/authApi';
 import { toast } from 'react-hot-toast';
+import { RootState } from '@/redux/store/store';
+import { usePathname } from 'next/navigation';
 
-type Props = {
-    open: boolean;
-    setOpen: (open: boolean) => void;
-    activeItem: number;
-    route: string;
-    setRoute: (route: string) => void;
-}
-
-export default function Header({ open, setOpen, activeItem, route, setRoute }: Props) {
+export default function Header() {
+    const [open, setOpen] = useState(false);
+    const [activeItem, setActiveItem] = useState(0);
+    const [route, setRoute] = useState('Login');
     const [active, setActive] = useState(false);
     const [openSidebar, setOpenSidebar] = useState(false);
-    const { user } = useSelector((state) => state.auth);
+    const { user } = useSelector((state: RootState) => state.auth);
     const [socialAuth, { isSuccess }] = useSocialAuthMutation();
 
     const { data } = useSession();
-
-    console.log("data => ", data);
-
-    console.log("user is => ", user);
-
+    const pathname = usePathname();
 
     useEffect(() => {
         const handleSocialAuth = async () => {
@@ -92,7 +85,6 @@ export default function Header({ open, setOpen, activeItem, route, setRoute }: P
                         </div>
                         <div className='flex items-center'>
                             <NavItems
-                                activeItem={activeItem}
                                 isMobile={false}
                             />
                             <ThemeSwitcher />
@@ -108,13 +100,13 @@ export default function Header({ open, setOpen, activeItem, route, setRoute }: P
 
                             {
                                 user ? (
-                                    <Link href="/profile">
+                                    <Link href="/profile" >
                                         <Image
-                                            src={user.avatar?.url || "/avatar.jpeg"}
+                                            src={user?.avatar?.url || "/avatar.jpeg"}
                                             width={30}
                                             height={30}
                                             alt='profile_image'
-                                            className='rounded-full cursor-pointer'
+                                            className={`rounded-full cursor-pointer ${pathname === '/profile'  && "border-[2px] border-blue-600 dark:border-[#ffc107]" }`}
                                         >
 
                                         </Image>

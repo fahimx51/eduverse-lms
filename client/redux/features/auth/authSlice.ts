@@ -1,8 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { User } from '@/app/types/UserType';
 
+interface AuthState {
+    token: string;
+    user: User | null;
+}
 const initialState = {
     token: "",
-    user: ""
+    user: null
 }
 
 const authSlice = createSlice({
@@ -22,7 +27,7 @@ const authSlice = createSlice({
         },
         userLoggedOut: (state) => {
             state.token = "";
-            state.user = "";
+            state.user = null
         }
     }
 });

@@ -1,19 +1,13 @@
 import React from 'react'
-import Head from 'next/head'
+import Head from 'next/head' // Import this!
+import type { Metadata } from 'next'
 
-interface HeadProps {
-    title: string;
-    description: string;
-    keywords: string;
+export const metadata: Metadata = {
+    title: 'EduVerse - Home',
+    description: 'Online Learning Platform'
 }
-
-export default function Heading({ title, description, keywords }: HeadProps) {
+export default function Heading() {
     return (
-        <Head>
-            <title>{title}</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <meta name="description" content={description} />
-            <meta name="keywords" content={keywords} />
-        </Head>
+        <span></span>
     )
 }

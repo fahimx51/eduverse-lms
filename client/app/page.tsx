@@ -1,34 +1,19 @@
-'use client'
-
-import React, { useState } from 'react'
-import Heading from './utils/Heading'
 import Header from './components/Header';
 import Hero from './components/Hero';
+import type { Metadata } from 'next'
 
-// interface Props {
-//   data: string;
-// }
+export const metadata: Metadata = {
+  title: 'EduVerse',
+  description: 'Elearning platform for students to learn and get help from teachers',
+  keywords: 'Programming, Web Development, Machine Learning, MERN Stack'
+}
 
 export default function Page() {
-  const [open, setOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState(1);
-  const [route, setRoute] = useState('Login');
 
   return (
     // Added h-screen and overflow-hidden here to lock the viewport
     <div className="w-full h-screen overflow-hidden bg-white dark:bg-black">
-      <Heading
-        title="EduVerse"
-        description="Elearning platform for students to learn and get help from teachers"
-        keywords="Programming, Web Development, Machine Learning, MERN Stack"
-      />
-
-      <Header open={open} setOpen={setOpen} activeItem={activeItem} setRoute={setRoute} route={route} />
-
-      {/* 
-          Ensure your Hero component inside is using 
-          h-[calc(100vh-80px)] to fit perfectly 
-      */}
+      <Header />
       <Hero />
     </div>
   )
