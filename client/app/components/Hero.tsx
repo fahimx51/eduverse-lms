@@ -13,7 +13,7 @@ export default function Hero() {
 
     return (
         // Added h-screen for mobile and overflow-hidden to kill the scrollbar
-        <div className='w-full flex items-center h-screen bg-white dark:bg-black transition-colors duration-300 overflow-hidden'>
+        <div className='w-full h-[calc(100vh-80px)] flex items-center bg-white dark:bg-black transition-colors duration-300 overflow-hidden'>
             <div className='w-[95%] 800px:w-[92%] m-auto 800px:flex items-center justify-between'>
 
                 {/* Left Side: Hidden on Mobile to prevent page overflow */}

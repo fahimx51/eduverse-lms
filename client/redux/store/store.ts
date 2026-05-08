@@ -16,10 +16,25 @@ export const store = configureStore({
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-// Initialization logic
 const initializeApp = async () => {
-    await store.dispatch(apiSlice.endpoints.refreshToken.initiate({}, { forceRefetch: true }));
-    await store.dispatch(apiSlice.endpoints.loadUser.initiate({}, { forceRefetch: true }));
+    // 1. Check if we are in the browser environment
+    if (typeof window !== "undefined") {
+        const hasSession = localStorage.getItem("user");
+
+        if (hasSession) {
+            try {
+                // 2. Run sequential auth handshake
+                await store.dispatch(apiSlice.endpoints.refreshToken.initiate({}, { forceRefetch: true }));
+                await store.dispatch(apiSlice.endpoints.loadUser.initiate({}, { forceRefetch: true }));
+            } catch (error) {
+                // If the token is invalid, clean up the hint
+                localStorage.removeItem("user");
+            }
+        }
+    }
 };
 
-initializeApp();
+// 3. Execution check
+if (typeof window !== "undefined") {
+    initializeApp();
+}

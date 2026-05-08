@@ -9,6 +9,7 @@ import { signOut } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import ProfileInfo from './ProfileInfo';
+import ChangePassword from './ChangePassword';
 
 export default function Profile() {
   const [scroll, setScroll] = useState(false);
@@ -55,6 +56,9 @@ export default function Profile() {
       <div className="w-full h-full bg-transparent">
         {active === 1 && user && (
           <ProfileInfo user={user} />
+        )}
+        {active === 2 && user && (
+          <ChangePassword />
         )}
       </div>
 

@@ -1,8 +1,8 @@
 'use client'
+import { RootState } from "@/redux/store/store";
 import { useSelector } from "react-redux";
-import { RootState } from "../redux/store/store";
 
 export default function useUserAuth() {
-    const { user } = useSelector((state: RootState) => state.auth)
+    const { user } = useSelector((state: RootState) => state.auth);
     return !!user;
 }

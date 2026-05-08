@@ -6,7 +6,6 @@ import Header from '../Header';
 export default function ProfileWrapper() {
     return (
         <>
-            <Header />
             <Profile />
         </>
     )

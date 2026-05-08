@@ -111,7 +111,7 @@ const ProfileInfo: FC<Props> = ({ user }) => {
                         <input
                             type="submit"
                             value="Update"
-                            className="w-full md:w-[250px] h-[40px] border border-blue-600 text-blue-600 font-semibold rounded-[5px] mt-8 cursor-pointer hover:bg-blue-600 hover:text-white transition-all duration-300 mx-auto block"
+                            className={`w-full md:w-[250px] h-[40px] border border-blue-600 dark:border-[#37a39a] text-blue-600 dark:text-[#37a39a] font-semibold rounded-[5px] mt-8 cursor-pointer hover:bg-blue-600 dark:hover:bg-[#37a39a] hover:text-white transition-all duration-300 mx-auto block `}
                         />
 
                     </div>

@@ -2,9 +2,10 @@ import { User } from '@/app/types/UserType';
 import Image from 'next/image';
 import React from 'react'
 import defaultAvatar from '../../../public/avatar.jpeg'
-import { RiLockPasswordLine } from 'react-icons/ri';
+import { RiAdminLine, RiLockPasswordLine } from 'react-icons/ri';
 import { SiCoursera } from 'react-icons/si';
 import { AiOutlineLogout } from 'react-icons/ai';
+import Link from 'next/link';
 
 type Props = {
     user: User | null,
@@ -58,8 +59,24 @@ export default function SideBarProfile({ user, avatar, active, setActive, logout
 
             </div>
 
+            {
+                user?.role === 'admin' && (
+                    <Link
+                        href='/admin'
+                        className={`w-full flex items-center px-3 py-4 cursor-pointer ${active === 4 ? "bg-gray-100 dark:bg-slate-800" : "bg-transparent"}`}
+                        onClick={() => setActive(4)}
+                    >
+                        <RiAdminLine size={20} className='text-black dark:text-white' />
+                        <h5 className='pl-2 800px:block hidden text-black dark:text-white'>
+                            Admin Dashboard
+                        </h5>
+                    </Link>
+
+                )
+            }
+
             <div
-                className={`w-full flex items-center px-3 py-4 cursor-pointer ${active === 4 ? "bg-gray-100 dark:bg-slate-800" : "bg-transparent"}`}
+                className={`w-full flex items-center px-3 py-4 cursor-pointer ${active === 5 ? "bg-gray-100 dark:bg-slate-800" : "bg-transparent"}`}
                 onClick={() => logoutHandler()}
             >
                 <AiOutlineLogout size={20} className='text-black dark:text-white' />
