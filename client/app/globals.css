@@ -31,6 +31,33 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+/* 1. Global styles for Firefox */
+* {
+  scrollbar-width: thin;
+  /* options: auto, thin, none */
+  scrollbar-color: #f5f5f5b0 #1771c6;
+  /* thumb color | track color */
+}
+
+/* 2. Webkit Browsers (Brave, Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1771c6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #f5f5f5b0;
+  border-radius: 10px;
+  /* Optional: adds a nice rounded look */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #32ae7e;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 .hero_animation {

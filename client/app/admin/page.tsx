@@ -1,5 +1,7 @@
 import React from 'react'
 import type { Metadata } from 'next'
+import AdminSidebar from '../components/Admin/AdminSidebar';
+import DashboardHero from '../components/Admin/DashboardHero';
 
 export const metadata: Metadata = {
     title: 'Admin | Eduverse',
@@ -9,8 +11,13 @@ export const metadata: Metadata = {
 
 export default function page() {
     return (
-        <div>
-            Admin Page
+        <div className='flex h-[200vh]'>
+            <div className='1500px:w-[16%] w-1/5'>
+                <AdminSidebar />
+            </div>
+            <div className='w-[85%]'>
+                <DashboardHero />
+            </div>
         </div>
     )
 }

@@ -14,6 +14,7 @@ export default function Page() {
     return (
         <>
             <Protected>
+                <Header />
                 <ProfileWrapper>
                 </ProfileWrapper>
             </Protected>

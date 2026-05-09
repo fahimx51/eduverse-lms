@@ -13,6 +13,7 @@ export default function Page() {
   return (
     // Added h-screen and overflow-hidden here to lock the viewport
     <div className="w-full bg-white dark:bg-slate-900/90">
+      <Header />
       <Hero />
     </div>
   )

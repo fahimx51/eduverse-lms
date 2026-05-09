@@ -7,7 +7,6 @@ import { Providers } from "./Provider"
 import { SessionProvider } from "next-auth/react"
 import { useLoadUserQuery } from "../redux/features/api/apiSlice"
 import Loader from "./components/Loader/Loader"
-import Header from "./components/Header";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -15,7 +14,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             <SessionProvider>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                     <Custom>
-                        <Header />
                         {children}
                     </Custom>
                     <Toaster position="top-center" reverseOrder={false} />
