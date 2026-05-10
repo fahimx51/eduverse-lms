@@ -86,7 +86,7 @@ export default function CourseContent({ active, setActive, courseContentData, se
         }
         else {
             setActiveSection(activeSection + 1);
-            
+
             const newContent = {
                 videoUrl: "",
                 title: "",
@@ -213,7 +213,7 @@ export default function CourseContent({ active, setActive, courseContentData, se
                                                 <div className="mb-3">
                                                     <label className={styles.label}>Video Url</label>
                                                     <input
-                                                        type="url"
+                                                        type="text"
                                                         placeholder="https://demovideourl/fdasfa"
                                                         className={`${styles.input}`}
                                                         value={item.videoUrl}
@@ -272,7 +272,7 @@ export default function CourseContent({ active, setActive, courseContentData, se
                                                                 }}
                                                             />
                                                             <input
-                                                                type="url"
+                                                                type="text"
                                                                 placeholder="Source Code Url... (Link URL)"
                                                                 className={`${styles.input} mt-6`}
                                                                 value={link.url}

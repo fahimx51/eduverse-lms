@@ -141,11 +141,11 @@ export default function CourseInformation({ courseInfo, setCourseInfo, active, s
                             Demo Url
                         </label>
                         <input
-                            type="url"
+                            type="text"
                             name=""
                             id="demoUrl"
                             required
-                            value={courseInfo.demoUrl}
+                            value={courseInfo?.demoUrl}
                             onChange={(e) => setCourseInfo({ ...courseInfo, demoUrl: e.target.value })}
                             placeholder="https://youtube.com/fdalsfje43eds"
                             className={`${styles.input}`}
