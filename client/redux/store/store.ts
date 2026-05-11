@@ -24,7 +24,6 @@ const initializeApp = async () => {
         if (hasSession) {
             try {
                 // 2. Run sequential auth handshake
-                await store.dispatch(apiSlice.endpoints.refreshToken.initiate({}, { forceRefetch: true }));
                 await store.dispatch(apiSlice.endpoints.loadUser.initiate({}, { forceRefetch: true }));
             } catch (error) {
                 // If the token is invalid, clean up the hint

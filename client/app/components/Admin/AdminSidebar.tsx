@@ -10,22 +10,21 @@ import {
     PeopleOutlinedIcon,
     ReceiptOutlinedIcon,
     BarChartOutlinedIcon,
-    MapOutlinedIcon,
     GroupsIcon,
     OndemandVideoIcon,
     VideoCallIcon,
     WebIcon,
     QuizIcon,
     WysiwygIcon,
-    ManageHistoryIcon,
     SettingsIcon,
     ExitToAppIcon,
-} from "./Icon"; // Ensure these match your Icon file exports
+} from "./Icon";
 import avatarDefault from "../../../public/avatar.jpeg"
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation"; // Added for route tracking
 import { RootState } from "@/redux/store/store";
 
 interface itemProps {
@@ -51,13 +50,37 @@ const Item: FC<itemProps> = ({ title, to, icon, selected, setSelected }) => {
 
 const Sidebar = () => {
     const { user } = useSelector((state: RootState) => state.auth);
-    const [logout, setLogout] = useState(false);
+    const pathname = usePathname(); // Hook to get current URL
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [selected, setSelected] = useState("Dashboard");
     const [mounted, setMounted] = useState(false);
-    const { theme, setTheme } = useTheme();
+    const { theme } = useTheme();
 
     useEffect(() => setMounted(true), []);
+
+    // Sync selected state with URL on load and path change
+    useEffect(() => {
+        if (mounted) {
+            const menuItems = [
+                { title: "Dashboard", to: "/admin" },
+                { title: "Users", to: "/admin/users" },
+                { title: "Invoices", to: "/admin/invoices" },
+                { title: "Create Course", to: "/admin/create-course" },
+                { title: "Live Courses", to: "/admin/courses" },
+                { title: "Hero", to: "/admin/hero" },
+                { title: "FAQ", to: "/admin/faq" },
+                { title: "Categories", to: "/admin/categories" },
+                { title: "Manage Team", to: "/admin/team" },
+                { title: "Analytics", to: "/admin/courses-analytics" },
+                { title: "Settings", to: "/admin/settings" },
+            ];
+
+            const currentItem = menuItems.find((item) => item.to === pathname);
+            if (currentItem) {
+                setSelected(currentItem.title);
+            }
+        }
+    }, [pathname, mounted]);
 
     if (!mounted) {
         return null;
@@ -104,7 +127,6 @@ const Sidebar = () => {
                 }}
             >
                 <Menu iconShape="square">
-                    {/* HEADER / LOGO */}
                     <MenuItem
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         icon={isCollapsed ? <ArrowForwardIosIcon /> : undefined}
@@ -113,7 +135,7 @@ const Sidebar = () => {
                         {!isCollapsed && (
                             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <Link href="/">
-                                    <h3 className="text-[25px] font- tracking-tight dark:text-white text-slate-900 font-semibold">
+                                    <h3 className="text-[25px] tracking-tight dark:text-white text-slate-900 font-semibold">
                                         EduVerse
                                     </h3>
                                 </Link>
@@ -124,7 +146,6 @@ const Sidebar = () => {
                         )}
                     </MenuItem>
 
-                    {/* PROFILE SECTION */}
                     {!isCollapsed && (
                         <Box sx={{ mb: "25px", textAlign: "center" }}>
                             <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -145,31 +166,27 @@ const Sidebar = () => {
                         </Box>
                     )}
 
-                    {/* MENU ITEMS */}
                     <Box sx={{ paddingLeft: isCollapsed ? undefined : "10px", paddingRight: "10px" }}>
                         <Item title="Dashboard" to="/admin" icon={<HomeOutlinedIcon />} selected={selected} setSelected={setSelected} />
 
-                        {/* DATA SECTION */}
                         {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !font- !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
+                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
                                 Data
                             </Typography>
                         )}
                         <Item title="Users" to="/admin/users" icon={<GroupsIcon />} selected={selected} setSelected={setSelected} />
                         <Item title="Invoices" to="/admin/invoices" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
 
-                        {/* CONTENT SECTION */}
                         {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !font- !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
+                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
                                 Content
                             </Typography>
                         )}
                         <Item title="Create Course" to="/admin/create-course" icon={<VideoCallIcon />} selected={selected} setSelected={setSelected} />
                         <Item title="Live Courses" to="/admin/courses" icon={<OndemandVideoIcon />} selected={selected} setSelected={setSelected} />
 
-                        {/* CUSTOMIZATION SECTION */}
                         {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !font- !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
+                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
                                 Customization
                             </Typography>
                         )}
@@ -177,23 +194,22 @@ const Sidebar = () => {
                         <Item title="FAQ" to="/admin/faq" icon={<QuizIcon />} selected={selected} setSelected={setSelected} />
                         <Item title="Categories" to="/admin/categories" icon={<WysiwygIcon />} selected={selected} setSelected={setSelected} />
 
-                        {/* MANAGEMENT SECTION */}
                         {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !font- !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
+                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
                                 Management
                             </Typography>
                         )}
                         <Item title="Manage Team" to="/admin/team" icon={<PeopleOutlinedIcon />} selected={selected} setSelected={setSelected} />
                         <Item title="Analytics" to="/admin/courses-analytics" icon={<BarChartOutlinedIcon />} selected={selected} setSelected={setSelected} />
 
-                        {/* EXTRAS */}
                         {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !font- !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
+                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
                                 Extras
                             </Typography>
                         )}
                         <Item title="Settings" to="/admin/settings" icon={<SettingsIcon />} selected={selected} setSelected={setSelected} />
-                        <div onClick={() => setLogout(true)} className="mt-4">
+
+                        <div onClick={() => console.log("Logout triggered")} className="mt-4">
                             <Item title="Logout" to="/" icon={<ExitToAppIcon />} selected={selected} setSelected={setSelected} />
                         </div>
                     </Box>

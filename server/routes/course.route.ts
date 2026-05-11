@@ -8,26 +8,26 @@ const courseRouter = express.Router();
 
 courseRouter.post('/upload-course', updateAccessToken, isAuthenticated, authorizeRoles('admin'), upload.single('thumbnail'), uploadCourse);
 
-courseRouter.put('/edit-course/:id', isAuthenticated, authorizeRoles('admin'), upload.single('thumbnail'), editCourse);
+courseRouter.put('/edit-course/:id', updateAccessToken, isAuthenticated, authorizeRoles('admin'), upload.single('thumbnail'), editCourse);
 
-courseRouter.get('/get-course/:id', isAuthenticated, getSingleCourse);
+courseRouter.get('/get-course/:id', updateAccessToken, isAuthenticated, getSingleCourse);
 
-courseRouter.get('/get-courses', isAuthenticated, getAllCourses);
+courseRouter.get('/get-courses', updateAccessToken, isAuthenticated, getAllCourses);
 
-courseRouter.get('/get-course-content/:id', isAuthenticated, getCourseByUser);
+courseRouter.get('/get-course-content/:id', updateAccessToken, isAuthenticated, getCourseByUser);
 
-courseRouter.put('/add-question', isAuthenticated, addQuestion);
+courseRouter.put('/add-question', updateAccessToken, isAuthenticated, addQuestion);
 
-courseRouter.put('/add-answer', isAuthenticated, addAnswer);
+courseRouter.put('/add-answer', updateAccessToken, isAuthenticated, addAnswer);
 
-courseRouter.put('/add-review/:id', isAuthenticated, addReview);
+courseRouter.put('/add-review/:id', updateAccessToken, isAuthenticated, addReview);
 
-courseRouter.put('/add-reply', isAuthenticated, authorizeRoles('admin'), addReplyToReview);
+courseRouter.put('/add-reply', updateAccessToken, isAuthenticated, authorizeRoles('admin'), addReplyToReview);
 
-courseRouter.get('/get-all-courses', isAuthenticated, authorizeRoles('admin'), getAllCourse);
+courseRouter.get('/get-all-courses', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getAllCourse);
 
 courseRouter.post('/getVdoCipherOTP', generateVideoUrl);
 
-courseRouter.delete('/delete-course/:id', isAuthenticated, authorizeRoles('admin'), deleteCourse);
+courseRouter.delete('/delete-course/:id', updateAccessToken, isAuthenticated, authorizeRoles('admin'), deleteCourse);
 
 export default courseRouter;

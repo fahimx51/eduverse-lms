@@ -101,8 +101,6 @@ export default function CreateCourse() {
         formData.append("data", JSON.stringify(data));
         formData.append("thumbnail", imageFile);
 
-        console.log(data);
-
         if (!isLoading) {
             await createCourse(formData);
         }

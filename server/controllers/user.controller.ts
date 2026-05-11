@@ -201,10 +201,7 @@ export const updateAccessToken = CatchAsyncErrors(async (req: Request, res: Resp
 
         await redis.set(parsedUser._id.toString(), JSON.stringify(parsedUser) as any, "EX", 7 * 24 * 60 * 60); // 7day expiration
 
-        res.status(200).json({
-            success: true,
-            accessToken
-        });
+        next();
     }
     catch (error: any) {
         console.log("Token refresh error:", error.message);

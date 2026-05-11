@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import AdminSidebar from '../../components/Admin/AdminSidebar'
 import DashboardHeader from '@/app/components/Admin/DashboardHeader';
 import CreateCourse from '@/app/components/Admin/Course/CreateCourse';
+import AdminProtected from '@/app/hooks/adminProtected';
 
 export const metadata: Metadata = {
     title: 'Create Course | Eduverse',
@@ -12,14 +13,16 @@ export const metadata: Metadata = {
 
 export default function page() {
     return (
-        <div className="flex">
-            <div className="1500px:w-[16%] w-1/5">
-                <AdminSidebar />
+        <AdminProtected>
+            <div className="flex">
+                <div className="1500px:w-[16%] w-1/5">
+                    <AdminSidebar />
+                </div>
+                <div className="w-[85%]">
+                    <DashboardHeader />
+                    <CreateCourse />
+                </div>
             </div>
-            <div className="w-[85%]">
-                <DashboardHeader />
-                <CreateCourse />
-            </div>
-        </div>
+        </AdminProtected>
     )
 }
