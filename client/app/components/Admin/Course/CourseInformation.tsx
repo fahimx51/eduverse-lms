@@ -2,18 +2,17 @@ import { styles } from '@/app/styles/style';
 import React, { useState } from 'react'
 
 type Props = {
+    imageFile: any,
+    setImageFile: (imageFile: string) => void;
     courseInfo: object,
     setCourseInfo: (courseInfo: object) => void;
     active: number,
     setActive: (active: number) => void;
 }
 
-export default function CourseInformation({ courseInfo, setCourseInfo, active, setActive }: Props) {
+export default function CourseInformation({ imageFile, setImageFile, courseInfo, setCourseInfo, active, setActive }: Props) {
 
-    const [image, setDragging] = useState(false);
-
-    const [imageFile, setImageFile] = useState("");
-
+    const [frontendImage, setFrontendImage] = useState("");
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,12 +21,8 @@ export default function CourseInformation({ courseInfo, setCourseInfo, active, s
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        setImageFile(URL.createObjectURL(file));
-        console.log(URL.createObjectURL(file));
-
-        if (file) {
-            setCourseInfo({ ...courseInfo, thumbnail: file })
-        }
+        setImageFile(file);
+        setFrontendImage(URL.createObjectURL(file));
     }
 
     return (
@@ -62,6 +57,7 @@ export default function CourseInformation({ courseInfo, setCourseInfo, active, s
                         required
                         placeholder='Write something amazing...'
                         className={`${styles.input} h-min py-2`}
+                        onChange={(e) => setCourseInfo({ ...courseInfo, description: e.target.value })}
                     >
                     </textarea>
                 </div>
@@ -168,7 +164,7 @@ export default function CourseInformation({ courseInfo, setCourseInfo, active, s
                     >
                         {
                             imageFile ? (
-                                <img src={imageFile} alt="Thumbnail Image" className="w-full h-full object-cover max-h-50  z-[-1]" />
+                                <img src={frontendImage} alt="Thumbnail Image" className="w-full h-full object-cover max-h-50  z-[-1]" />
                             ) : (
 
                                 <span className="block font-bold text-gray-600">

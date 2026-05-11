@@ -1,15 +1,30 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CourseInformation from './CourseInformation';
 import CourseOptions from './CourseOptions';
 import CourseData from './CourseData';
 import CourseContent from './CourseContent';
 import CoursePreview from './CoursePreview';
+import { useCreateCourseMutation } from '@/redux/features/courses/coursesApi';
+import { toast } from 'react-hot-toast';
+import { redirect } from 'next/navigation';
 
 export default function CreateCourse() {
 
+    const [createCourse, { isLoading, isSuccess, error }] = useCreateCourseMutation();
     const [active, setActive] = useState(0);
+
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success("Course created successfully");
+            redirect("/admin/all-courses");
+        }
+        if (error) {
+            console.log(error);
+            toast.error("Failed to create course");
+        }
+    }, [isLoading, isSuccess, error]);
 
     const [courseInfo, setCourseInfo] = useState({
         name: "",
@@ -18,8 +33,7 @@ export default function CreateCourse() {
         estimatedPrice: "",
         tags: "",
         level: "",
-        demoUrl: "",
-        thumbnail: ""
+        demoUrl: ""
     });
 
     const [benefits, setBenefits] = useState([{ title: "" }]);
@@ -41,6 +55,8 @@ export default function CreateCourse() {
     ]);
 
     const [courseData, setCourseData] = useState({});
+
+    const [imageFile, setImageFile] = useState(null);
 
     const handleSubmit = async () => {
         // Format benefits array
@@ -68,7 +84,6 @@ export default function CreateCourse() {
             price: courseInfo.price,
             estimatedPrice: courseInfo.estimatedPrice,
             tags: courseInfo.tags,
-            thumbnail: courseInfo.thumbnail,
             level: courseInfo.level,
             demoUrl: courseInfo.demoUrl,
             totalVideos: courseContentData.length,
@@ -80,8 +95,17 @@ export default function CreateCourse() {
         setCourseData(data)
     };
 
-    const handleCourseCreate = (e) => {
+    const handleCourseCreate = async (e) => {
         const data = courseData;
+        const formData = new FormData();
+        formData.append("data", JSON.stringify(data));
+        formData.append("thumbnail", imageFile);
+
+        console.log(data);
+
+        if (!isLoading) {
+            await createCourse(formData);
+        }
     };
 
     return (
@@ -90,6 +114,8 @@ export default function CreateCourse() {
                 {
                     active === 0 && (
                         <CourseInformation
+                            imageFile={imageFile}
+                            setImageFile={setImageFile}
                             courseInfo={courseInfo}
                             setCourseInfo={setCourseInfo}
                             active={active}
