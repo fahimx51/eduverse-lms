@@ -30,9 +30,10 @@ export const getAllUserService = async (res: Response) => {
 };
 
 //update user role
-export const updateUserRoleService = async (res: Response, id: string, role: string) => {
+export const updateUserRoleService = async (res: Response, email: string, role: string) => {
     try {
-        const user = await userModel.findById(id);
+        // 1. Use findOne to get a single document
+        const user = await userModel.findOne({ email });
 
         if (!user) {
             return res.status(404).json({
@@ -40,6 +41,8 @@ export const updateUserRoleService = async (res: Response, id: string, role: str
                 message: "User not found"
             });
         }
+
+        // 3. Update and save
         user.role = role;
         await user.save();
 

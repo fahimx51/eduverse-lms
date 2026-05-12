@@ -419,8 +419,8 @@ export const getAllUser = CatchAsyncErrors(async (req: Request, res: Response, n
 //update user role
 export const updateUserRole = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id, role } = req.body;
-        updateUserRoleService(res, id, role);
+        const { email, role } = req.body;
+        updateUserRoleService(res, email, role);
     }
     catch (error: any) {
         return next(new ErrorHandler(error.message, 500))
