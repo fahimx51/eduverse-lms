@@ -1,5 +1,5 @@
 import express from "express";
-import { addAnswer, addQuestion, addReplyToReview, addReview, deleteCourse, editCourse, generateVideoUrl, getAllCourse, getAllCourses, getCourseByUser, getSingleCourse, uploadCourse } from "../controllers/course.controller";
+import { addAnswer, addQuestion, addReplyToReview, addReview, deleteCourse, editCourse, generateVideoUrl, getAllAdminCourses, getAllCourses, getCourseByUser, getSingleCourse, uploadCourse } from "../controllers/course.controller";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 import { upload } from "../middleware/multer";
 import { updateAccessToken } from "../controllers/user.controller";
@@ -24,7 +24,7 @@ courseRouter.put('/add-review/:id', updateAccessToken, isAuthenticated, addRevie
 
 courseRouter.put('/add-reply', updateAccessToken, isAuthenticated, authorizeRoles('admin'), addReplyToReview);
 
-courseRouter.get('/get-all-courses', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getAllCourse);
+courseRouter.get('/get-all-courses', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getAllAdminCourses);
 
 courseRouter.post('/getVdoCipherOTP', generateVideoUrl);
 

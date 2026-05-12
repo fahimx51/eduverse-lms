@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 import { useGetAllCoursesQuery } from "@/redux/features/courses/coursesApi";
 import Loader from "../../Loader/Loader";
 import { format } from 'timeago.js';
+import Link from "next/link";
 
 export default function AllCourses() {
     const { isLoading, data } = useGetAllCoursesQuery({});
@@ -78,8 +79,8 @@ export default function AllCourses() {
             sortable: false,
             align: "center",
             headerAlign: "center",
-            renderCell: () => (
-                <Button
+            renderCell: (params) => (
+                <Link href={`/admin/edit-course/${params.row.id}`}
                     sx={{ minWidth: "unset", padding: "6px", borderRadius: "8px" }}
                     className={`${isDark ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
                 >
@@ -87,7 +88,7 @@ export default function AllCourses() {
                         size={18}
                         className={isDark ? "text-blue-400" : "text-blue-600"}
                     />
-                </Button>
+                </Link>
             ),
         },
         {

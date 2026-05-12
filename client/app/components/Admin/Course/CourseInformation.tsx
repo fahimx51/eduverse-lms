@@ -8,9 +8,10 @@ type Props = {
     setCourseInfo: (courseInfo: object) => void;
     active: number,
     setActive: (active: number) => void;
+    thumbnail: string;
 }
 
-export default function CourseInformation({ imageFile, setImageFile, courseInfo, setCourseInfo, active, setActive }: Props) {
+export default function CourseInformation({ imageFile, setImageFile, courseInfo, setCourseInfo, active, setActive, thumbnail }: Props) {
 
     const [frontendImage, setFrontendImage] = useState("");
 
@@ -55,6 +56,7 @@ export default function CourseInformation({ imageFile, setImageFile, courseInfo,
                         cols={30}
                         rows={10}
                         required
+                        value={courseInfo?.description}
                         placeholder='Write something amazing...'
                         className={`${styles.input} h-min py-2`}
                         onChange={(e) => setCourseInfo({ ...courseInfo, description: e.target.value })}
@@ -163,8 +165,8 @@ export default function CourseInformation({ imageFile, setImageFile, courseInfo,
                         className="w-full min-h-[6vh] dark:border-white border-slate-600 hover:bg-black/60 cursor-pointer border flex items-center justify-center "
                     >
                         {
-                            imageFile ? (
-                                <img src={frontendImage} alt="Thumbnail Image" className="w-full h-full object-cover max-h-50  z-[-1]" />
+                            imageFile || thumbnail ? (
+                                <img src={frontendImage || thumbnail} alt="Thumbnail Image" className="w-full h-full object-cover max-h-50  z-[-1]" />
                             ) : (
 
                                 <span className="block font-bold text-gray-600">

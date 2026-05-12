@@ -50,10 +50,9 @@ export const editCourse = CatchAsyncErrors(async (req: Request, res: Response, n
 
         const courseId = req.params.id;
 
-        console.log('Course ID:', courseId);
         const course = await courseModel.findByIdAndUpdate(courseId,
             { $set: data },
-            { new: true }
+            { returnDocument: 'after' }
         );
 
         if (!course) {
@@ -389,7 +388,7 @@ export const addReplyToReview = CatchAsyncErrors(async (req: Request, res: Respo
 });
 
 //get all courses --only for admin
-export const getAllCourse = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
+export const getAllAdminCourses = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
         getAllCourseService(res);
     }

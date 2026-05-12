@@ -6,23 +6,31 @@ import CourseOptions from './CourseOptions';
 import CourseData from './CourseData';
 import CourseContent from './CourseContent';
 import CoursePreview from './CoursePreview';
-import { useCreateCourseMutation } from '@/redux/features/courses/coursesApi';
+import { useEditCourseMutation, useGetAllCoursesQuery } from '@/redux/features/courses/coursesApi';
 import { toast } from 'react-hot-toast';
-import { redirect } from 'next/navigation';
+import { redirect, useParams } from 'next/navigation';
+import { router } from 'next/client';
 
-export default function CreateCourse() {
+export default function EditCourse() {
 
-    const [createCourse, { isLoading, isSuccess, error }] = useCreateCourseMutation();
+    const { id } = useParams();
+
+    const { data } = useGetAllCoursesQuery({}, { refetchOnMountOrArgChange: true });
+    const [editCourse, { isSuccess, error, isLoading }] = useEditCourseMutation();
+
     const [active, setActive] = useState(0);
+
+    const editCourseData = data && data.courses.find((i: any) => i._id === id);
+    console.log(editCourseData);
 
     useEffect(() => {
         if (isSuccess) {
-            toast.success("Course created successfully");
+            toast.success("Course updated successfully");
             redirect("/admin/courses");
         }
         if (error) {
             console.log(error);
-            toast.error("Failed to create course");
+            toast.error("Failed to update course");
         }
     }, [isLoading, isSuccess, error]);
 
@@ -35,6 +43,7 @@ export default function CreateCourse() {
         level: "",
         demoUrl: ""
     });
+
 
     const [benefits, setBenefits] = useState([{ title: "" }]);
     const [prerequisites, setPrerequisites] = useState([{ title: "" }]);
@@ -54,17 +63,37 @@ export default function CreateCourse() {
         },
     ]);
 
+
+
     const [courseData, setCourseData] = useState({});
 
     const [imageFile, setImageFile] = useState(null);
 
+    useEffect(() => {
+        if (editCourseData) {
+            setCourseInfo({
+                name: editCourseData.name,
+                description: editCourseData?.description,
+                price: editCourseData.price,
+                estimatedPrice: editCourseData?.estimatedPrice,
+                tags: editCourseData.tags,
+                level: editCourseData.level,
+                demoUrl: editCourseData.demoUrl,
+                thumbnail: {
+                    public_id: editCourseData.thumbnail.public_id,
+                    url: editCourseData.thumbnail.url
+                },
+            })
+            setBenefits(editCourseData.benefits);
+            setPrerequisites(editCourseData.prerequisites);
+            setCourseContentData(editCourseData.courseData);
+        }
+    }, [editCourseData]);
+
     const handleSubmit = async () => {
-        // Format benefits array
         const formattedBenefits = benefits.map((benefit) => ({ title: benefit.title }));
-        // Format prerequisites array
         const formattedPrerequisites = prerequisites.map((prerequisite) => ({ title: prerequisite.title }));
 
-        // Format course content array
         const formattedCourseContentData = courseContentData.map((courseContent) => ({
             videoUrl: courseContent.videoUrl,
             title: courseContent.title,
@@ -77,8 +106,7 @@ export default function CreateCourse() {
             suggestion: courseContent.suggestion,
         }));
 
-        // Prepare our data object
-        const data = {
+        const finalData = { // Changed name to avoid conflict with the 'data' from useQuery
             name: courseInfo.name,
             description: courseInfo.description,
             price: courseInfo.price,
@@ -89,22 +117,17 @@ export default function CreateCourse() {
             totalVideos: courseContentData.length,
             benefits: formattedBenefits,
             prerequisites: formattedPrerequisites,
-            // CHANGE THIS LINE: from courseContent to courseData
+            // FIX: Change 'courseContent' to 'courseData' to match your DB schema
             courseData: formattedCourseContentData,
         };
 
-        setCourseData(data)
+        setCourseData(finalData);
     };
 
     const handleCourseCreate = async (e) => {
-        const data = courseData;
-        const formData = new FormData();
-        formData.append("data", JSON.stringify(data));
-        formData.append("thumbnail", imageFile);
-
-        if (!isLoading) {
-            await createCourse(formData);
-        }
+        // FIX: Send 'courseData' (the state) instead of 'data' (the query result)
+        const res = await editCourse({ id: id, data: courseData });
+        console.log("Response after update:", res);
     };
 
     return (
@@ -113,6 +136,7 @@ export default function CreateCourse() {
                 {
                     active === 0 && (
                         <CourseInformation
+                            thumbnail={editCourseData?.thumbnail.url || null}
                             imageFile={imageFile}
                             setImageFile={setImageFile}
                             courseInfo={courseInfo}
@@ -152,6 +176,7 @@ export default function CreateCourse() {
                             setActive={setActive}
                             courseData={courseData}
                             handleCourseCreate={handleCourseCreate}
+                            isEdit={true}
                         />
                     )
                 }

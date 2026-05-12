@@ -16,15 +16,22 @@ type Props = {
 export default function CourseData({ benefits, setBenefits, prerequisites, setPrerequisites, active, setActive }: Props) {
 
     const handleBenefitChange = (index: number, value: string) => {
-        const updatedBenefits = [...benefits];
-        updatedBenefits[index].title = value;
-        setBenefits(updatedBenefits);
-    }
+        setBenefits((prevBenefits) => {
+            const updatedBenefits = [...prevBenefits];
+            // Create a BRAND NEW object for this index
+            updatedBenefits[index] = { ...updatedBenefits[index], title: value };
+            return updatedBenefits;
+        });
+    };
+
     const handlePrerequisiteChange = (index: number, value: string) => {
-        const updatedPrerequisite = [...prerequisites];
-        updatedPrerequisite[index].title = value;
-        setPrerequisites(updatedPrerequisite);
-    }
+        setPrerequisites((prevPrerequisites) => {
+            const updatedPrerequisites = [...prevPrerequisites];
+            // Create a BRAND NEW object for this index
+            updatedPrerequisites[index] = { ...updatedPrerequisites[index], title: value };
+            return updatedPrerequisites;
+        });
+    };
 
     const handleAddBenefit = () => {
         setBenefits([...benefits, { title: "" }])
