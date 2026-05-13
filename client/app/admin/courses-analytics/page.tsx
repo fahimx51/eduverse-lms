@@ -1,11 +1,12 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import AdminSidebar from '../components/Admin/AdminSidebar';
-import DashboardHero from '../components/Admin/DashboardHero';
-import AdminProtected from '../hooks/adminProtected';
+import CourseAnalytics from '@/app/components/Admin/Analytics/CourseAnalytics';
+import AdminProtected from '@/app/hooks/adminProtected';
+import DashboardHero from '@/app/components/Admin/DashboardHero';
+import AdminSidebar from "../../components/Admin/AdminSidebar"
 
 export const metadata: Metadata = {
-    title: 'User-Analytics | Eduverse',
+    title: 'Course-Anaylytics | Eduverse',
     description: 'Elearning platform for students to learn and get help from teachers',
     keywords: 'Programming, Web Development, Machine Learning, MERN Stack'
 }
@@ -19,6 +20,7 @@ export default function page() {
                 </div>
                 <div className='w-[85%]'>
                     <DashboardHero />
+                    <CourseAnalytics />
                 </div>
             </div>
         </AdminProtected>

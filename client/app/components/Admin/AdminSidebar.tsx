@@ -3,28 +3,32 @@ import { FC, useEffect, useState } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography } from "@mui/material";
 import "react-pro-sidebar/dist/css/styles.css";
+
+// Existing local imports
 import {
     HomeOutlinedIcon,
     ArrowForwardIosIcon,
     ArrowBackIosIcon,
     PeopleOutlinedIcon,
     ReceiptOutlinedIcon,
-    BarChartOutlinedIcon,
     GroupsIcon,
     OndemandVideoIcon,
     VideoCallIcon,
     WebIcon,
     QuizIcon,
     WysiwygIcon,
-    SettingsIcon,
     ExitToAppIcon,
 } from "./Icon";
+
+// Direct imports from react-icons to fix the "Module not found" issue
+import { MdOutlineAnalytics, MdTimeline, MdPieChart } from "react-icons/md";
+
 import avatarDefault from "../../../public/avatar.jpeg"
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-import { usePathname } from "next/navigation"; // Added for route tracking
+import { usePathname } from "next/navigation";
 import { RootState } from "@/redux/store/store";
 
 interface itemProps {
@@ -50,7 +54,7 @@ const Item: FC<itemProps> = ({ title, to, icon, selected, setSelected }) => {
 
 const Sidebar = () => {
     const { user } = useSelector((state: RootState) => state.auth);
-    const pathname = usePathname(); // Hook to get current URL
+    const pathname = usePathname();
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [selected, setSelected] = useState("Dashboard");
     const [mounted, setMounted] = useState(false);
@@ -58,7 +62,7 @@ const Sidebar = () => {
 
     useEffect(() => setMounted(true), []);
 
-    // Sync selected state with URL on load and path change
+    // FIX: Sync selected state with URL - matching Titles to Routes exactly
     useEffect(() => {
         if (mounted) {
             const menuItems = [
@@ -71,8 +75,9 @@ const Sidebar = () => {
                 { title: "FAQ", to: "/admin/faq" },
                 { title: "Categories", to: "/admin/categories" },
                 { title: "Manage Team", to: "/admin/team" },
-                { title: "Analytics", to: "/admin/courses-analytics" },
-                { title: "Settings", to: "/admin/settings" },
+                { title: "Courses Analytics", to: "/admin/courses-analytics" },
+                { title: "Orders Analytics", to: "/admin/orders-analytics" },
+                { title: "Users Analytics", to: "/admin/users-analytics" },
             ];
 
             const currentItem = menuItems.find((item) => item.to === pathname);
@@ -82,9 +87,7 @@ const Sidebar = () => {
         }
     }, [pathname, mounted]);
 
-    if (!mounted) {
-        return null;
-    }
+    if (!mounted) return null;
 
     return (
         <Box
@@ -102,9 +105,8 @@ const Sidebar = () => {
                 },
                 "& .pro-menu-item.active": {
                     color: "#37a39a !important",
-                    background: `${theme === "dark" ? "#1e293b50" : "#f1f5f9"}`,
+                    background: `${theme === "dark" ? "#1e293b50" : "#f1f5f9"} !important`,
                     borderRadius: "8px",
-                    marginRight: "10px",
                 },
                 "& .pro-inner-item": {
                     padding: "8px 20px !important",
@@ -135,9 +137,7 @@ const Sidebar = () => {
                         {!isCollapsed && (
                             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <Link href="/">
-                                    <h3 className="text-[25px] tracking-tight dark:text-white text-slate-900 font-semibold">
-                                        EduVerse
-                                    </h3>
+                                    <h3 className="text-[25px] tracking-tight dark:text-white text-slate-900 font-semibold">EduVerse</h3>
                                 </Link>
                                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                                     <ArrowBackIosIcon className="dark:text-slate-400 text-slate-600 !text-[16px]" />
@@ -169,46 +169,46 @@ const Sidebar = () => {
                     <Box sx={{ paddingLeft: isCollapsed ? undefined : "10px", paddingRight: "10px" }}>
                         <Item title="Dashboard" to="/admin" icon={<HomeOutlinedIcon />} selected={selected} setSelected={setSelected} />
 
-                        {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
-                                Data
-                            </Typography>
-                        )}
+                        {!isCollapsed && <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">Data</Typography>}
                         <Item title="Users" to="/admin/users" icon={<GroupsIcon />} selected={selected} setSelected={setSelected} />
                         <Item title="Invoices" to="/admin/invoices" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
 
-                        {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
-                                Content
-                            </Typography>
-                        )}
+                        {!isCollapsed && <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">Content</Typography>}
                         <Item title="Create Course" to="/admin/create-course" icon={<VideoCallIcon />} selected={selected} setSelected={setSelected} />
                         <Item title="Live Courses" to="/admin/courses" icon={<OndemandVideoIcon />} selected={selected} setSelected={setSelected} />
 
-                        {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
-                                Customization
-                            </Typography>
-                        )}
+                        {!isCollapsed && <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">Customization</Typography>}
                         <Item title="Hero" to="/admin/hero" icon={<WebIcon />} selected={selected} setSelected={setSelected} />
                         <Item title="FAQ" to="/admin/faq" icon={<QuizIcon />} selected={selected} setSelected={setSelected} />
                         <Item title="Categories" to="/admin/categories" icon={<WysiwygIcon />} selected={selected} setSelected={setSelected} />
 
-                        {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
-                                Management
-                            </Typography>
-                        )}
+                        {!isCollapsed && <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">Management</Typography>}
                         <Item title="Manage Team" to="/admin/team" icon={<PeopleOutlinedIcon />} selected={selected} setSelected={setSelected} />
-                        <Item title="Analytics" to="/admin/courses-analytics" icon={<BarChartOutlinedIcon />} selected={selected} setSelected={setSelected} />
 
-                        {!isCollapsed && (
-                            <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">
-                                Extras
-                            </Typography>
-                        )}
-                        <Item title="Settings" to="/admin/settings" icon={<SettingsIcon />} selected={selected} setSelected={setSelected} />
+                        {/* Analytics Section with React Icons directly */}
+                        <Item
+                            title="Courses Analytics"
+                            to="/admin/courses-analytics"
+                            icon={<MdOutlineAnalytics size={20} />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                        <Item
+                            title="Orders Analytics"
+                            to="/admin/orders-analytics"
+                            icon={<MdTimeline size={20} />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
+                        <Item
+                            title="Users Analytics"
+                            to="/admin/users-analytics"
+                            icon={<MdPieChart size={20} />}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
 
+                        {!isCollapsed && <Typography variant="h6" className="dark:text-slate-500 text-slate-400 !text-[11px] uppercase tracking-[1.5px] !mt-6 !mb-2 !ml-4">Extras</Typography>}
                         <div onClick={() => console.log("Logout triggered")} className="mt-4">
                             <Item title="Logout" to="/" icon={<ExitToAppIcon />} selected={selected} setSelected={setSelected} />
                         </div>
