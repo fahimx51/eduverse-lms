@@ -8,8 +8,8 @@ const layoutRouter = express.Router();
 
 layoutRouter.post('/create-layout', updateAccessToken, isAuthenticated, authorizeRoles('admin'), upload.single('image'), createLayout);
 
-layoutRouter.post('/edit-layout', updateAccessToken, isAuthenticated, authorizeRoles('admin'), upload.single('image'), editLayout);
+layoutRouter.put('/edit-layout', updateAccessToken, isAuthenticated, authorizeRoles('admin'), upload.single('image'), editLayout);
 
-layoutRouter.get('/get-layout', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getLayout);
+layoutRouter.get('/get-layout/:type', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getLayout);
 
 export default layoutRouter;

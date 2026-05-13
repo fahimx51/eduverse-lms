@@ -33,6 +33,7 @@ export default function CreateCourse() {
         estimatedPrice: "",
         tags: "",
         level: "",
+        categories: "",
         demoUrl: ""
     });
 
@@ -44,6 +45,7 @@ export default function CreateCourse() {
             title: "",
             description: "",
             videoSection: "Untitled Section",
+            videoLength: "",
             links: [
                 {
                     title: "",
@@ -70,6 +72,8 @@ export default function CreateCourse() {
             title: courseContent.title,
             description: courseContent.description,
             videoSection: courseContent.videoSection,
+            // FIX: Explicitly include videoLength and convert to Number
+            videoLength: courseContent.videoLength !== "" ? Number(courseContent.videoLength) : 0,
             links: courseContent.links.map((link) => ({
                 title: link.title,
                 url: link.url,
@@ -85,16 +89,20 @@ export default function CreateCourse() {
             estimatedPrice: courseInfo.estimatedPrice,
             tags: courseInfo.tags,
             level: courseInfo.level,
+            // FIX: Ensure category is passed if your schema expects it
+            categories: courseInfo.categories,
             demoUrl: courseInfo.demoUrl,
             totalVideos: courseContentData.length,
             benefits: formattedBenefits,
             prerequisites: formattedPrerequisites,
-            // CHANGE THIS LINE: from courseContent to courseData
             courseData: formattedCourseContentData,
         };
 
-        setCourseData(data)
+        setCourseData(data);
     };
+
+    // console.log("Data : ", courseData);
+    // console.log("info ", courseInfo);
 
     const handleCourseCreate = async (e) => {
         const data = courseData;

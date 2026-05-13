@@ -73,37 +73,45 @@ export const editLayout = CatchAsyncErrors(
 
             if (type === "Banner") {
 
-                const image = req.file;
-
-                if (!image) {
-                    return next(new ErrorHandler("Please provide an Banner image", 400))
-                }
-
-                const uploaded = await uploadOnCloudinary(image.buffer, image.mimetype, 'eduverse/layout');
-
-                const { title, subTitle } = req.body;
-
-
                 const bannerType = await layoutModel.findOne({ type });
 
                 if (!bannerType) {
                     return next(new ErrorHandler("Banner not found", 404))
                 }
 
-                //delete previous banner image
-                if (bannerType?.banner?.image?.public_id) {
-                    await cloudinary.uploader.destroy(bannerType.banner.image.public_id);
-                }
+                const image = req.file;
+                const { title, subTitle } = req.body;
 
-                await bannerType.updateOne({
-                    banner: {
-                        type,
-                        image: {
-                            public_id: uploaded?.public_id,
-                            url: uploaded?.url
-                        }, title, subTitle
+
+                if (image) {
+                    //delete previous banner image
+                    if (bannerType?.banner?.image?.public_id) {
+                        await cloudinary.uploader.destroy(bannerType.banner.image.public_id);
                     }
-                });
+
+                    const uploaded = await uploadOnCloudinary(image.buffer, image.mimetype, 'eduverse/layout');
+
+                    await bannerType.updateOne({
+                        banner: {
+                            type,
+                            image: {
+                                public_id: uploaded?.public_id,
+                                url: uploaded?.url
+                            }, title, subTitle
+                        }
+                    });
+                }
+                else {
+                    await bannerType.updateOne({
+                        banner: {
+                            type,
+                            image: {
+                                public_id: bannerType.banner?.image?.public_id,
+                                url: bannerType.banner?.image?.url
+                            }, title, subTitle
+                        }
+                    });
+                }
             }
 
             if (type === 'FAQ') {
@@ -149,8 +157,8 @@ export const editLayout = CatchAsyncErrors(
 export const getLayout = CatchAsyncErrors(
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const { type } = req.body;
-            const layout = await layoutModel.findOne({ type });
+            const { type } = req.params;
+            const layout = await layoutModel.findOne({ type: type });
             if (!layout) {
                 return next(new ErrorHandler(`${type} not found`, 404))
             }

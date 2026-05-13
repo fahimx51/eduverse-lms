@@ -9,7 +9,7 @@ type Props = {
     setActive: (active: number) => void;
     courseData: any;
     handleCourseCreate: any;
-    isEdit: boolean
+    isEdit?: boolean
 }
 
 export default function CoursePreview({ active, setActive, courseData, handleCourseCreate, isEdit }: Props) {

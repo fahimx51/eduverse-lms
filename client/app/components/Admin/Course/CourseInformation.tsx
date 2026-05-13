@@ -1,5 +1,6 @@
 import { styles } from '@/app/styles/style';
-import React, { useState } from 'react'
+import { useGetHeroDataQuery } from '@/redux/features/layout/layoutApi';
+import React, { useEffect, useState } from 'react'
 
 type Props = {
     imageFile: any,
@@ -12,6 +13,16 @@ type Props = {
 }
 
 export default function CourseInformation({ imageFile, setImageFile, courseInfo, setCourseInfo, active, setActive, thumbnail }: Props) {
+
+    const { data } = useGetHeroDataQuery("Categories", {});
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        if (data) {
+            setCategories(data.layout.categories);
+        }
+
+    }, [data]);
 
     const [frontendImage, setFrontendImage] = useState("");
 
@@ -100,21 +111,47 @@ export default function CourseInformation({ imageFile, setImageFile, courseInfo,
                 </div>
                 <br />
 
-                <div>
-                    <label htmlFor="tags">
-                        Course Tags
-                    </label>
-                    <input
-                        type="text"
-                        name=""
-                        id="tags"
-                        required
-                        value={courseInfo.tags}
-                        onChange={(e) => setCourseInfo({ ...courseInfo, tags: e.target.value })}
-                        placeholder="Node Js, Express Js, Socket.io, Tailwind, Javascript"
-                        className={`${styles.input}`}
-                    />
+                <div className='w-full flex justify-between'>
+                    <div className='w-[48%]'>
+                        <label htmlFor="tags">
+                            Course Tags
+                        </label>
+                        <input
+                            type="text"
+                            name=""
+                            id="tags"
+                            required
+                            value={courseInfo.tags}
+                            onChange={(e) => setCourseInfo({ ...courseInfo, tags: e.target.value })}
+                            placeholder="Node Js, Express Js, Socket.io, Tailwind, Javascript"
+                            className={`${styles.input}`}
+                        />
+                    </div>
+
+                    <div className='w-[48%]'>
+                        <label htmlFor="category" className={`${styles.label}`}>
+                            Course Category
+                        </label>
+                        <select
+                            name="category"
+                            id="category"
+                            className={`${styles.input}`}
+                            value={courseInfo.categories}
+                            onChange={(e) => setCourseInfo({ ...courseInfo, categories: e.target.value })}
+                        >
+                            <option value="">Select Category</option>
+                            {
+                                categories && categories.map((item: any) => (
+                                    // Changed value from item._id to item.title
+                                    <option value={item.title} key={item.title}>
+                                        {item.title}
+                                    </option>
+                                ))
+                            }
+                        </select>
+                    </div>
                 </div>
+
                 <br />
 
                 <div className='w-full flex justify-between'>

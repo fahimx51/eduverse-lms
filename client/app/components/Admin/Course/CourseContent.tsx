@@ -223,6 +223,24 @@ export default function CourseContent({ active, setActive, courseContentData, se
                                             />
                                         </div>
                                         <div className="mb-3">
+                                            <label className={styles.label}>Video Length (minutes)</label>
+                                            <input
+                                                type="number"
+                                                placeholder="20"
+                                                className={`${styles.input}`}
+                                                value={item.videoLength}
+                                                onChange={(e) => {
+                                                    // Convert the string value to a number
+                                                    const val = e.target.value === "" ? "" : Number(e.target.value);
+
+                                                    const updatedData = courseContentData.map((c: any, i: number) =>
+                                                        i === index ? { ...c, videoLength: val } : c
+                                                    );
+                                                    setCourseContentData(updatedData);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="mb-3">
                                             <label className={styles.label}>Video Description</label>
                                             <textarea
                                                 rows={8}
