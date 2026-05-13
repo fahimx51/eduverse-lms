@@ -6,9 +6,12 @@ import { RootState } from "@/redux/store/store";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { useSelector } from "react-redux";
 
+type Props = {
+    open: boolean;
+    setOpen: (open: boolean) => void;
+}
 
-export default function DashboardHeader() {
-    const [open, setOpen] = useState(false);
+export default function DashboardHeader({ open, setOpen }: Props) {
 
     return (
         <div className="w-full flex items-center justify-end p-4 fixed top-0 right-0 z-10 shadow-sm dark:shadow-md dark:bg-slate-900/60 dark:backdrop:blur-lg ">
