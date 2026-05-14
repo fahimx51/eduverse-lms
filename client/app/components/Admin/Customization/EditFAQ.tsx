@@ -30,213 +30,153 @@ export default function EditFAQ() {
         }
     }, [data]);
 
-    // Toggle expand/collapse
-    const toggleExpand = (id: string) => {
-        setExpandedId(expandedId === id ? null : id);
-    };
+    const toggleExpand = (id: string) => setExpandedId(expandedId === id ? null : id);
+    const toggleEdit = (id: string) => setEditingId(editingId === id ? null : id);
 
-    // Toggle edit mode
-    const toggleEdit = (id: string) => {
-        setEditingId(editingId === id ? null : id);
-    };
-
-    // Update a field
     const handleChange = (id: string, field: 'question' | 'answer', value: string) => {
         setFaqs(prev => prev.map(faq =>
             faq._id === id ? { ...faq, [field]: value } : faq
         ));
     };
 
-    // Add new FAQ
     const handleAdd = () => {
-        const newFaq: IFAQ = {
-            _id: `temp_${Date.now()}`,
-            question: "",
-            answer: ""
-        };
+        const newFaq: IFAQ = { _id: `temp_${Date.now()}`, question: "", answer: "" };
         setFaqs(prev => [...prev, newFaq]);
         setEditingId(newFaq._id!);
         setExpandedId(newFaq._id!);
     };
 
-    // Delete FAQ
     const handleDelete = (id: string) => {
         setFaqs(prev => prev.filter(faq => faq._id !== id));
         toast.success("FAQ removed");
     };
 
-    // Save all
     const handleSave = async () => {
         const isValid = faqs.every(f => f.question.trim() && f.answer.trim());
         if (!isValid) {
             toast.error("Please fill in all question and answer fields");
             return;
         }
-
-        // Strip all _id — let MongoDB handle IDs completely
-        const cleanFaqs = faqs.map(({ _id, ...rest }) => rest)
-
-        await editHeroData({
-            type: "FAQ",
-            faq: cleanFaqs
-        });
-
+        const cleanFaqs = faqs.map(({ _id, ...rest }) => rest);
+        await editHeroData({ type: "FAQ", faq: cleanFaqs });
         toast.success("FAQs saved successfully!");
     };
 
     return (
-        <>
-            {
-                isLoading ? (
-                    <Loader />
-                ) : (
-                    <div className="w-full min-h-screen pt-[80px] px-4 800px:px-8 pb-10">
+        <div className="w-full min-h-screen bg-[#f8fafc] dark:bg-[#0f172a] pt-[80px] pb-20">
+            {isLoading ? <Loader /> : (
+                <div className="max-w-[1000px] mx-auto px-4">
 
-                        {/* Header */}
-                        <div className="mb-8 flex items-center justify-between">
-                            <div>
-                                <h1 className="text-2xl font-josefin font-bold text-black dark:text-white">
-                                    Edit FAQ
-                                </h1>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-poppins">
-                                    Manage frequently asked questions
-                                </p>
-                            </div>
-                            <span className="px-4 py-2 rounded-xl text-sm font-poppins font-medium bg-blue-50 dark:bg-[#1F2A40] text-blue-700 dark:text-blue-300">
-                                {faqs.length} Questions
-                            </span>
+                    {/* Modern Header Section */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+                        <div>
+                            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                                FAQ Management
+                            </h1>
+                            <p className="text-slate-500 dark:text-slate-400 mt-1 font-poppins">
+                                Shape the knowledge base of your Eduverse platform.
+                            </p>
                         </div>
-
-                        {/* FAQ List */}
-                        <div className="flex flex-col gap-3 max-w-[900px]">
-                            {faqs.map((faq, index) => {
-                                const id = faq._id!;
-                                const isExpanded = expandedId === id;
-                                const isEditing = editingId === id;
-
-                                return (
-                                    <div
-                                        key={id}
-                                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111C43] overflow-hidden transition-all duration-200"
-                                    >
-                                        {/* FAQ Header Row */}
-                                        <div className="flex items-center gap-3 px-4 py-3">
-
-                                            {/* Index */}
-                                            <span className="w-6 h-6 rounded-full bg-blue-50 dark:bg-[#1a2550] text-blue-600 dark:text-blue-300 text-xs font-bold flex items-center justify-center flex-shrink-0 font-poppins">
-                                                {index + 1}
-                                            </span>
-
-                                            {/* Question — editable or display */}
-                                            <div className="flex-1 min-w-0">
-                                                {isEditing ? (
-                                                    <input
-                                                        type="text"
-                                                        value={faq.question}
-                                                        onChange={(e) => handleChange(id, 'question', e.target.value)}
-                                                        placeholder="Enter question..."
-                                                        className="w-full bg-slate-50 dark:bg-[#1a2550] border border-slate-200 dark:border-white/10 rounded-lg px-3 py-1.5 text-sm font-poppins text-black dark:text-white outline-none focus:ring-2 focus:ring-[#3b5bdb] placeholder:text-slate-400"
-                                                    />
-                                                ) : (
-                                                    <p className="text-sm font-medium font-poppins text-black dark:text-white truncate">
-                                                        {faq.question || <span className="opacity-40 italic">No question entered</span>}
-                                                    </p>
-                                                )}
-                                            </div>
-
-                                            {/* Action Buttons */}
-                                            <div className="flex items-center gap-1 flex-shrink-0">
-
-                                                {/* Edit / Done */}
-                                                <button
-                                                    onClick={() => toggleEdit(id)}
-                                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isEditing
-                                                        ? 'bg-green-500 hover:bg-green-600 text-white'
-                                                        : 'bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300'
-                                                        }`}
-                                                >
-                                                    {isEditing
-                                                        ? <HiOutlineCheck size={15} />
-                                                        : <HiOutlinePencil size={15} />
-                                                    }
-                                                </button>
-
-                                                {/* Delete */}
-                                                <button
-                                                    onClick={() => handleDelete(id)}
-                                                    className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-white/5 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-all"
-                                                >
-                                                    <AiOutlineDelete size={15} />
-                                                </button>
-
-                                                {/* Expand */}
-                                                <button
-                                                    onClick={() => toggleExpand(id)}
-                                                    className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 transition-all"
-                                                >
-                                                    {isExpanded
-                                                        ? <MdOutlineKeyboardArrowUp size={18} />
-                                                        : <MdOutlineKeyboardArrowDown size={18} />
-                                                    }
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        {/* Answer — expanded */}
-                                        {isExpanded && (
-                                            <div className="px-4 pb-4 pt-1 border-t border-slate-100 dark:border-white/5">
-                                                <p className="text-xs font-medium font-poppins text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">
-                                                    Answer
-                                                </p>
-                                                {isEditing ? (
-                                                    <textarea
-                                                        value={faq.answer}
-                                                        onChange={(e) => handleChange(id, 'answer', e.target.value)}
-                                                        placeholder="Enter answer..."
-                                                        rows={4}
-                                                        className="w-full bg-slate-50 dark:bg-[#1a2550] border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm font-poppins text-black dark:text-white outline-none focus:ring-2 focus:ring-[#3b5bdb] placeholder:text-slate-400 resize-none transition-all"
-                                                    />
-                                                ) : (
-                                                    <p className="text-sm text-slate-600 dark:text-slate-300 font-poppins leading-relaxed">
-                                                        {faq.answer || <span className="opacity-40 italic">No answer entered</span>}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-
-                            {/* Empty state */}
-                            {faqs.length === 0 && (
-                                <div className="text-center py-16 rounded-xl border border-dashed border-slate-200 dark:border-white/10">
-                                    <p className="text-slate-400 dark:text-slate-500 font-poppins text-sm">
-                                        No FAQs yet. Add your first one below.
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Bottom Buttons */}
-                        <div className="flex items-center gap-3 mt-6 max-w-[900px]">
+                        <div className="flex gap-3">
                             <button
                                 onClick={handleAdd}
-                                className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-dashed border-slate-300 dark:border-white/20 text-slate-600 dark:text-slate-300 hover:border-[#3b5bdb] hover:text-[#3b5bdb] dark:hover:text-blue-400 transition-all text-sm font-poppins font-medium"
+                                className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all text-sm font-semibold text-slate-700 dark:text-slate-200"
                             >
-                                <AiOutlinePlus size={16} />
-                                Add Question
+                                <AiOutlinePlus className="text-blue-500" /> Add Question
                             </button>
-
                             <button
                                 onClick={handleSave}
-                                className="px-6 py-2.5 bg-[#3b5bdb] hover:bg-[#2f4bc4] active:scale-[0.98] text-white font-poppins font-medium text-sm rounded-xl transition-all shadow-md shadow-blue-900/20"
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg shadow-blue-500/20 transition-all active:scale-95 text-sm"
                             >
                                 Save Changes
                             </button>
                         </div>
-                    </div >
-                )
-            }
-        </>
+                    </div>
+
+                    {/* FAQ Grid/List */}
+                    <div className="space-y-4">
+                        {faqs.map((faq, index) => {
+                            const id = faq._id!;
+                            const isExpanded = expandedId === id;
+                            const isEditing = editingId === id;
+
+                            return (
+                                <div
+                                    key={id}
+                                    className={`group transition-all duration-300 rounded-2xl border ${isExpanded
+                                        ? 'border-blue-200 dark:border-blue-900/50 bg-blue-50/30 dark:bg-blue-900/10'
+                                        : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+                                        }`}
+                                >
+                                    <div className="p-4 flex items-center gap-4">
+                                        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold text-sm">
+                                            {String(index + 1).padStart(2, '0')}
+                                        </div>
+
+                                        <div className="flex-1">
+                                            {isEditing ? (
+                                                <input
+                                                    type="text"
+                                                    value={faq.question}
+                                                    onChange={(e) => handleChange(id, 'question', e.target.value)}
+                                                    className="w-full bg-transparent border-b border-blue-500/50 py-1 text-lg font-medium outline-none text-black dark:text-white"
+                                                    placeholder="Enter the question..."
+                                                />
+                                            ) : (
+                                                <h3 className="text-lg font-medium text-slate-800 dark:text-slate-100 cursor-pointer" onClick={() => toggleExpand(id)}>
+                                                    {faq.question || "New empty question"}
+                                                </h3>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => toggleEdit(id)} className={`p-2 rounded-lg transition-colors ${isEditing ? 'bg-green-500 text-white' : 'hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500'}`}>
+                                                {isEditing ? <HiOutlineCheck size={18} /> : <HiOutlinePencil size={18} />}
+                                            </button>
+                                            <button onClick={() => handleDelete(id)} className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 transition-colors">
+                                                <AiOutlineDelete size={18} />
+                                            </button>
+                                            <button onClick={() => toggleExpand(id)} className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500">
+                                                {isExpanded ? <MdOutlineKeyboardArrowUp size={20} /> : <MdOutlineKeyboardArrowDown size={20} />}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {isExpanded && (
+                                        <div className="px-4 pb-6 ml-14">
+                                            <div className="h-px bg-slate-200 dark:bg-slate-800 mb-4" />
+                                            <p className="text-xs font-bold text-blue-500 uppercase tracking-widest mb-2">Detailed Answer</p>
+                                            {isEditing ? (
+                                                <textarea
+                                                    value={faq.answer}
+                                                    onChange={(e) => handleChange(id, 'answer', e.target.value)}
+                                                    className="w-full bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 text-sm outline-none border border-slate-200 dark:border-slate-700 focus:border-blue-500 text-black dark:text-white"
+                                                    rows={4}
+                                                    placeholder="Write the answer here..."
+                                                />
+                                            ) : (
+                                                <p className="text-slate-600 dark:text-slate-400 leading-relaxed font-poppins">
+                                                    {faq.answer || "Please add an answer for this question."}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+
+                        {faqs.length === 0 && (
+                            <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                                <div className="bg-blue-50 dark:bg-blue-900/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <AiOutlinePlus size={24} className="text-blue-500" />
+                                </div>
+                                <h2 className="text-xl font-bold text-slate-800 dark:text-white">No FAQs Created</h2>
+                                <p className="text-slate-500 mt-2">Click the button above to create your first question.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }

@@ -12,7 +12,7 @@ import { RiUserAddFill } from "react-icons/ri";
 import { toast } from "react-hot-toast";
 
 type Props = {
-    isTeam: boolean
+    isTeam?: boolean
 }
 
 export default function AllCourses({ isTeam }: Props) {
@@ -144,7 +144,7 @@ export default function AllCourses({ isTeam }: Props) {
         })) || [];
 
     return (
-        <div className="w-full min-h-screen pt-[80px] px-4 800px:px-8">
+        <div className="w-full pt-[80px] px-4 800px:px-8">
 
             {/* Page Header */}
             <div className="mb-6 flex items-center justify-between">

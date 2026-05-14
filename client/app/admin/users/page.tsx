@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function page() {
     return (
         <AdminProtected>
-            <div className='flex h-screen'>
+            <div className='flex mb-2'>
                 <div className='1500px:w-[16%] w-1/5'>
                     <AdminSidebar />
                 </div>

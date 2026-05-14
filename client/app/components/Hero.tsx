@@ -3,8 +3,14 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { HiOutlineSearch } from 'react-icons/hi';
+import { useGetHeroDataQuery } from '@/redux/features/layout/layoutApi';
 
 export default function Hero() {
+
+    const { data } = useGetHeroDataQuery("Banner", {
+        refetchOnMountOrArgChange: true
+    });
+   
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleSearch = (e: React.FormEvent) => {
@@ -13,7 +19,7 @@ export default function Hero() {
 
     return (
         // Added h-screen for mobile and overflow-hidden to kill the scrollbar
-        <div className='w-full h-[calc(100vh-80px)] flex items-center bg-white dark:bg-black transition-colors duration-300 overflow-hidden'>
+        <div className='w-full min-h-screen flex items-center  transition-colors duration-300 overflow-hidden'>
             <div className='w-[95%] 800px:w-[92%] m-auto 800px:flex items-center justify-between'>
 
                 {/* Left Side: Hidden on Mobile to prevent page overflow */}
@@ -23,7 +29,7 @@ export default function Hero() {
 
                     <div className='z-[1] flex items-center justify-center'>
                         <Image
-                            src="/hero-image.png"
+                            src={data?.layout?.banner?.image?.url || "/hero-image.png"}
                             alt="EduVerse Hero"
                             width={600}
                             height={600}
@@ -36,11 +42,11 @@ export default function Hero() {
                 {/* Right Side: Content */}
                 <div className='w-full 800px:w-[50%] flex flex-col items-center 800px:items-start text-center 800px:text-left'>
                     <h1 className='text-[32px] 400px:text-[40px] 800px:text-[45px] 1100px:text-[55px] 1500px:text-[65px] font-extrabold text-slate-900 dark:text-white font-poppins leading-[40px] 400px:leading-[50px] 800px:leading-[55px] 1100px:leading-[70px]'>
-                        Improve Your Online <br className='hidden 800px:block' /> Learning Experience <br className='hidden 800px:block' /> Better Instantly
+                        {data?.layout?.banner?.title}
                     </h1>
 
                     <p className='text-slate-600 dark:text-[#ACACAC] font-josefin font-[400] text-[16px] 800px:text-[18px] mt-6 1100px:w-[80%] leading-[26px]'>
-                        We have 40k+ Online courses & 500K+ Online registered student. Find your desired Courses from them.
+                        {data?.layout?.banner?.subTitle}
                     </p>
 
                     {/* Search Bar with Brand-Matching Ring */}

@@ -120,7 +120,7 @@ export default function AllCourses() {
     })) || [];
 
     return (
-        <div className="w-full min-h-screen pt-[80px] px-4 800px:px-8">
+        <div className="w-full pt-[80px] px-4 800px:px-8 mb-2">
 
             {/* Page Header */}
             <div className="mb-6 flex items-center justify-between">
