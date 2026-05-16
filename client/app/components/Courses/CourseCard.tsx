@@ -19,9 +19,9 @@ export default function CourseCard({ item, isProfile }: Props) {
                     <Image
                         src={item.thumbnail.url}
                         alt="Course Thumbnail"
-                        layout="fill"
-                        objectFit="cover"
-                        className="transition-transform duration-500 group-hover:scale-110"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
                     />
                     {/* Floating Badge (Optional) */}
                     <div className="absolute top-2 right-2 bg-blue-600 text-white text-[10px] uppercase font-bold px-2 py-1 rounded-md">
@@ -35,7 +35,7 @@ export default function CourseCard({ item, isProfile }: Props) {
                     </h1>
 
                     <div className="w-full flex items-center justify-between py-3 border-b border-gray-100 dark:border-white/5">
-                        <Ratings rating={item.rating} />
+                        <Ratings rating={item.ratings} />
                         <span className={`text-[13px] font-medium text-slate-500 dark:text-slate-400 ${isProfile && "hidden 800px:inline"}`}>
                             {item.purchased.toLocaleString()} Students
                         </span>

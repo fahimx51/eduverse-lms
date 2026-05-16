@@ -4,7 +4,7 @@ import userModel from "../models/user.model";
 
 //get user by Id
 export const getUserById = async (id: string, res: Response) => {
-    const userJson = await redis.get(id);
+    const userJson = null; //will use redis here
 
     if (userJson) {
         const user = JSON.parse(userJson);
@@ -14,10 +14,20 @@ export const getUserById = async (id: string, res: Response) => {
         });
     }
     else {
-        return res.status(404).json({
-            success: false,
-            message: "User not found in redis"
-        });
+        const user = await userModel.findById(id);
+
+        if (user) {
+            return res.status(200).json({
+                success: true,
+                user
+            });
+        }
+        else {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
     }
 };
 

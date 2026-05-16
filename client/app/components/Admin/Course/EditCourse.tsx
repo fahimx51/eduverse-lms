@@ -92,11 +92,12 @@ export default function EditCourse() {
         const formattedPrerequisites = prerequisites.map((prerequisite) => ({ title: prerequisite.title }));
 
         const formattedCourseContentData = courseContentData.map((courseContent) => ({
+            // ... your existing content mapping
             videoUrl: courseContent.videoUrl,
             title: courseContent.title,
             description: courseContent.description,
             videoSection: courseContent.videoSection,
-            videoLength: Number(courseContent.videoLength), // Ensure it's a number
+            videoLength: Number(courseContent.videoLength),
             links: courseContent.links.map((link) => ({
                 title: link.title,
                 url: link.url,
@@ -111,12 +112,12 @@ export default function EditCourse() {
             estimatedPrice: courseInfo.estimatedPrice,
             tags: courseInfo.tags,
             level: courseInfo.level,
-            categories: courseInfo.categories, // Included category
-            demoUrl: courseInfo.demoUrl,
+            categories: courseInfo.categories,
+            demoUrl: courseInfo.demoUrl, // <--- ADD THIS LINE MANUALLY HERE
             totalVideos: courseContentData.length,
             benefits: formattedBenefits,
             prerequisites: formattedPrerequisites,
-            courseData: formattedCourseContentData, // Match DB Key
+            courseData: formattedCourseContentData,
         };
 
         setCourseData(finalData);

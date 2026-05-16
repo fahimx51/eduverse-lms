@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import sendMail from '../utils/sendMail';
 import notificationModel from '../models/notification.model';
 import axios from 'axios';
+import userModel from '../models/user.model';
 
 //upload course
 export const uploadCourse = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
@@ -59,6 +60,8 @@ export const editCourse = CatchAsyncErrors(async (req: Request, res: Response, n
             return next(new ErrorHandler('Course not found', 404));
         }
 
+        await redis.del(course._id.toString());
+
         res.status(201).json({
             success: true,
             course
@@ -103,7 +106,7 @@ export const getSingleCourse = CatchAsyncErrors(async (req: Request, res: Respon
 //get all courses -- without purchasing
 export const getAllCourses = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const isCacheExist = await redis.get('allCourses');
+        const isCacheExist = null;
 
         if (isCacheExist) {
             const courses = JSON.parse(isCacheExist);
@@ -133,10 +136,12 @@ export const getAllCourses = CatchAsyncErrors(async (req: Request, res: Response
 //get course content -- only for valid users
 export const getCourseByUser = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userCourseList = req.user?.courses;
+        const user = await userModel.findById(req?.user?._id);
+
+        const userCourseList = user?.courses;
         const courseId = req.params.id;
 
-        const isCourseExist = userCourseList?.find((course: any) => course._id.toString === courseId);
+        const isCourseExist = userCourseList?.find((course: any) => course.courseId === courseId);
 
         if (!isCourseExist) {
             return next(new ErrorHandler("You are not eligible to access this course", 404));

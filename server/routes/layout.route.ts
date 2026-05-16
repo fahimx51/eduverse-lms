@@ -10,6 +10,6 @@ layoutRouter.post('/create-layout', updateAccessToken, isAuthenticated, authoriz
 
 layoutRouter.put('/edit-layout', updateAccessToken, isAuthenticated, authorizeRoles('admin'), upload.single('image'), editLayout);
 
-layoutRouter.get('/get-layout/:type', updateAccessToken, isAuthenticated, authorizeRoles('admin'), getLayout);
+layoutRouter.get('/get-layout/:type', getLayout);
 
 export default layoutRouter;
