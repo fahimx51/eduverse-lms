@@ -24,11 +24,11 @@ export default function CoursePlayer({ videoUrl, title }: Props) {
     }, [videoUrl]);
 
     return (
-        <div className="relative pt-[41%]">
+        <div className="relative pt-[56.25%] overflow-hidden">
             {videoData.otp && videoData.playbackInfo !== "" && (
                 <iframe
                     src={`https://player.vdocipher.com/v2/?otp=${videoData?.otp}&playbackInfo=${videoData.playbackInfo}&player=KAXYG2HWP9VrccTi`}
-                    className="absolute top-0 left-0 w-[90%] h-full border-none"
+                    className="absolute top-0 left-0 w-[100%] h-[100%] border-none"
                     allowFullScreen={true}
                     allow="encrypted-media"
                 >

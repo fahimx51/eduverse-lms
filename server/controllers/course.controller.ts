@@ -244,7 +244,8 @@ export const addAnswer = CatchAsyncErrors(async (req: Request, res: Response, ne
         //create new answer object
         const newAnswer: any = {
             user: req.user,
-            answer
+            answer,
+            createdAt: new Date().toISOString(),
         }
 
         //add this answer to the question
@@ -374,7 +375,8 @@ export const addReplyToReview = CatchAsyncErrors(async (req: Request, res: Respo
 
         const replyData: any = {
             user: req.user,
-            question: comment
+            question: comment,
+            createdAt: new Date().toISOString(),
         };
 
         targetedReview.commentReplies.push(replyData);

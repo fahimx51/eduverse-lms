@@ -10,7 +10,7 @@ type Props = {
     isDemo?: boolean;
 }
 
-export default function CourseContentList({ data, activeVideo, setActiveVideo, isDemo }) {
+export default function CourseContentList({ data, activeVideo, setActiveVideo, isDemo } : Props) {
 
     const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set<string>());
 
