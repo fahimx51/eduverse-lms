@@ -59,9 +59,28 @@ const courseApi = apiSlice.injectEndpoints({
                     answer, courseId, questionId, contentId
                 }
             })
+        }),
+        addReview: builder.mutation({
+            query: ({ review, rating, courseId }) => ({
+                url: `course/add-review/${courseId}`,
+                method: "PUT",
+                body: {
+                    review, rating
+                }
+            })
+        }),
+
+        addReplyToReview: builder.mutation({
+            query: ({ comment, courseId, reviewId }) => ({
+                url: `course/add-reply`,
+                method: "PUT",
+                body: {
+                    comment, courseId, reviewId
+                }
+            })
         })
     }),
 
 })
 
-export const { useCreateCourseMutation, useGetAllCoursesQuery, useEditCourseMutation, useGetUserAllCoursesQuery, useGetCourseDetailsQuery, useGetCourseContentQuery, useAddNewQuestionMutation, useAddAnswerMutation } = courseApi;
+export const { useCreateCourseMutation, useGetAllCoursesQuery, useEditCourseMutation, useGetUserAllCoursesQuery, useGetCourseDetailsQuery, useGetCourseContentQuery, useAddNewQuestionMutation, useAddAnswerMutation, useAddReviewMutation, useAddReplyToReviewMutation } = courseApi;

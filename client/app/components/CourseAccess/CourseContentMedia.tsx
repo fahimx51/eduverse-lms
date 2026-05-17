@@ -2,7 +2,8 @@
 import { styles } from '@/app/styles/style';
 import { User } from '@/app/types/UserType';
 import CoursePlayer from '@/app/utils/CoursePlayer';
-import { useAddNewQuestionMutation, useAddAnswerMutation } from '@/redux/features/courses/coursesApi';
+import Ratings from '@/app/utils/Ratings';
+import { useAddNewQuestionMutation, useAddAnswerMutation, useAddReviewMutation, useGetCourseDetailsQuery, useAddReplyToReviewMutation } from '@/redux/features/courses/coursesApi';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast';
@@ -26,12 +27,22 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
     const [rating, setRating] = useState(0);
     const [question, setQuestion] = useState("");
     const [review, setReview] = useState("");
+    const [reply, setReply] = useState("");
+    const [isReviewReply, setIsReviewReply] = useState(false);
+    const [reviewId, setReviewId] = useState("");
 
     // 👉 FIX: Use the exact hook name matching your api endpoint configuration
     const [addAnswer, { isSuccess: answerSuccess, error: answerError, isLoading: answerCreationLoading }] = useAddAnswerMutation();
     const [addNewQuestion, { isSuccess, error, isLoading: questionCreationLoading }] = useAddNewQuestionMutation();
+    const [addReview, { isSuccess: reviewSuccess, error: reviewError, isLoading: reviewCreationLoading }] = useAddReviewMutation();
 
-    const isReviewExists = data?.[activeVideo]?.reviews?.some((item: any) => item.user?._id === user._id);
+    const [addReplyToReview, { isSuccess: reviewReplySuccess, isLoading: reviewReplyLoading, error: reviewReplyError }] = useAddReplyToReviewMutation();
+
+    const { data: courseData, refetch: courseDataRefetch } = useGetCourseDetailsQuery({ id }, { refetchOnMountOrArgChange: true });
+
+
+
+    const isReviewExists = courseData?.course?.reviews?.some((item: any) => item.user?._id === user._id);
 
     // 👉 FIX: Dynamic answer string acceptance from child inputs
     const handleAnswerSubmit = (answerText: string, qId: string) => {
@@ -55,6 +66,31 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
             addNewQuestion({ question, courseId: id, contentId: data?.[activeVideo]._id })
         }
     }
+    const handleReviewSubmit = async () => {
+        if (review.length === 0) {
+            toast.error("Review can't be empty");
+        }
+        else {
+            addReview({ review, rating, courseId: id });
+            setReview("");
+        }
+    }
+
+    const handleReviewReplySubmit = async () => {
+        if (reply.length === 0) {
+            toast.error("Reply can't be empty");
+        }
+        else {
+            await addReplyToReview({
+                courseId: id,
+                comment: reply,
+                reviewId
+            });
+            setReply("");
+            setIsReviewReply(false);
+
+        }
+    }
 
     useEffect(() => {
         if (isSuccess) {
@@ -65,6 +101,29 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
         if (answerSuccess) {
             toast.success("Answer added Successfully");
             refetch(); // 👉 FIX: Added refetch hook trigger here to sync view instantly without refreshing
+        }
+        if (reviewSuccess) {
+            toast.success("Review added Successfully");
+            refetch();
+            courseDataRefetch();
+        }
+        if (reviewReplySuccess) {
+            toast.success("Reply added Successfully");
+            refetch();
+            courseDataRefetch();
+        }
+
+        if (reviewReplyError) {
+            if ("data" in reviewReplyError) {
+                const errorMessage = reviewReplyError as any;
+                toast.error(errorMessage.data.message);
+            }
+        }
+        if (reviewError) {
+            if ("data" in reviewError) {
+                const errorMessage = reviewError as any;
+                toast.error(errorMessage.data.message);
+            }
         }
         if (answerError) {
             if ("data" in answerError) {
@@ -78,7 +137,7 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
                 toast.error(errorMessage.data.message);
             }
         }
-    }, [isSuccess, error, answerSuccess, answerError]);
+    }, [isSuccess, error, answerSuccess, answerError, reviewSuccess, reviewError, reviewReplySuccess, reviewReplyError]);
 
     return (
         <div className="w-[95%] 800px:w-[86%] py-4 m-auto min-h-screen mb-10">
@@ -201,11 +260,84 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
                 <div className="w-full">
                     <>
                         {!isReviewExists && (
-                            <div className="flex w-full">
+                            <>
+                                <div className="flex w-full">
+                                    <Image
+                                        src={
+                                            user.avatar
+                                                ? user.avatar.url
+                                                : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                                        }
+                                        width={50}
+                                        height={50}
+                                        alt=""
+                                        className="w-[50px] h-[50px] rounded-full object-cover"
+                                    />
+                                    <div className="w-full">
+                                        <h5 className="pl-3 text-[20px] dark:text-white text-black">
+                                            Give a Rating <span className="text-red-500">*</span>
+                                        </h5>
+                                        <div className="flex w-full ml-2 pb-3">
+                                            {[1, 2, 3, 4, 5].map((i) =>
+                                                rating >= i ? (
+                                                    <AiFillStar
+                                                        key={i}
+                                                        className="mr-1 cursor-pointer"
+                                                        color="rgb(246,186,0)"
+                                                        size={25}
+                                                        onClick={() => setRating(i)}
+                                                    />
+                                                ) : (
+                                                    <AiOutlineStar
+                                                        key={i}
+                                                        className="mr-1 cursor-pointer"
+                                                        color="rgb(246,186,0)"
+                                                        size={25}
+                                                        onClick={() => setRating(i)}
+                                                    />
+                                                )
+                                            )}
+                                        </div>
+                                        <textarea
+                                            name=""
+                                            value={review}
+                                            onChange={(e) => setReview(e.target.value)}
+                                            id=""
+                                            cols={40}
+                                            rows={5}
+                                            placeholder="Write your comment..."
+                                            className="outline-none bg-transparent 800px:ml-3 border border-[#ffffff57] w-[95%] 800px:w-full p-2 rounded text-[18px] dark:text-white text-black font-poppins"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="w-full flex justify-end">
+                                    <div
+                                        className={`${styles.button} !w-[120px] !h-[40px] text-[18px] mt-5 800px:mr-0 mr-2 ${reviewCreationLoading && "cursor-no-drop"}`}
+                                        onClick={reviewCreationLoading ? () => { } : handleReviewSubmit}
+                                    >
+                                        Submit
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                    </>
+                </div>
+            )}
+            <br />
+
+            <div className="w-full h-[1px] bg-gray-400/50 dark:bg-slate-400/20">
+
+            </div>
+            <div className="w-full">
+                {courseData?.course?.reviews.map((item: any, index: number) => (
+                    <div key={index} className="w-full my-5">
+                        <div className="w-full flex">
+                            <div className="shrink-0">
                                 <Image
                                     src={
-                                        user.avatar
-                                            ? user.avatar.url
+                                        item?.user?.avatar
+                                            ? item.user.avatar.url
                                             : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
                                     }
                                     width={50}
@@ -213,55 +345,93 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
                                     alt=""
                                     className="w-[50px] h-[50px] rounded-full object-cover"
                                 />
-                                <div className="w-full">
-                                    <h5 className="pl-3 text-[20px] dark:text-white text-black">
-                                        Give a Rating <span className="text-red-500">*</span>
-                                    </h5>
-                                    <div className="flex w-full ml-2 pb-3">
-                                        {[1, 2, 3, 4, 5].map((i) =>
-                                            rating >= i ? (
-                                                <AiFillStar
-                                                    key={i}
-                                                    className="mr-1 cursor-pointer"
-                                                    color="rgb(246,186,0)"
-                                                    size={25}
-                                                    onClick={() => setRating(i)}
-                                                />
-                                            ) : (
-                                                <AiOutlineStar
-                                                    key={i}
-                                                    className="mr-1 cursor-pointer"
-                                                    color="rgb(246,186,0)"
-                                                    size={25}
-                                                    onClick={() => setRating(i)}
-                                                />
-                                            )
-                                        )}
-                                    </div>
-                                    <textarea
-                                        name=""
-                                        value={review}
-                                        onChange={(e) => setReview(e.target.value)}
-                                        id=""
-                                        cols={40}
-                                        rows={5}
-                                        placeholder="Write your comment..."
-                                        className="outline-none bg-transparent 800px:ml-3 border border-[#ffffff57] w-[95%] 800px:w-full p-2 rounded text-[18px] dark:text-white text-black font-poppins"
-                                    />
-                                </div>
                             </div>
-                        )}
 
-                        <div className="w-full flex justify-end">
-                            <div
-                                className={`${styles.button} !w-[120px] !h-[40px] text-[18px] mt-5 800px:mr-0 mr-2`}
-                            >
-                                Submit
+                            <div className="ml-2">
+                                <h1 className="text-[18px] text-black dark:text-white">{item?.user.name}</h1>
+                                <Ratings rating={item.rating} />
+                                <p className="text-black dark:text-white">{item.comment}</p>
+                                <small className="text-[#ffffff83]">
+                                    {format(item.createdAt)} •
+                                </small>
                             </div>
                         </div>
-                    </>
-                </div>
-            )}
+                        {
+                            user.role === "admin" && (
+                                <span
+                                    className="text-black/60 dark:text-white/60 cursor-pointer text-sm"
+                                    onClick={() => {
+                                        setIsReviewReply(true);
+                                        setReviewId(item._id);
+                                        // Scroll directly to the bottom of the document body
+                                        setTimeout(() => {
+                                            window.scrollTo({
+                                                top: document.body.scrollHeight,
+                                                behavior: "smooth"
+                                            });
+                                        }, 100);
+                                    }}
+                                >
+                                    Add Reply <BiMessage size={16} className="inline" />
+                                </span>
+                            )
+                        }
+
+                        {item.commentReplies.map((i: any, index: number) => (
+                            <div key={index} className="w-full flex 800px:ml-16 my-5">
+                                <div className="w-[50px] h-[50px] shrink-0">
+                                    <Image
+                                        src={
+                                            i.user.avatar
+                                                ? i.user.avatar.url
+                                                : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                                        }
+                                        width={50}
+                                        height={50}
+                                        alt=""
+                                        className="w-[50px] h-[50px] rounded-full object-cover"
+                                    />
+                                </div>
+                                <div className="pl-2">
+                                    <div className="flex gap-2 items-center">
+                                        <h5 className="text-[20px] text-black dark:text-white">{i.user.name}</h5>
+                                        <VscVerifiedFilled size={20} className="text-blue-400 mt-[4px]" />
+                                    </div>
+                                    <p className="text-black/80 dark:text-white/80">{i.question}</p>
+                                    <small className="text-[#ffffff83]">
+                                        {format(i.createdAt)} •
+                                    </small>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                ))}
+            </div>
+            {
+                isReviewReply && (
+                    <div className="w-full flex flex-col items-end">
+                        <textarea
+                            rows={10}
+                            cols={10}
+                            placeholder="Write your reply..."
+                            value={reply}
+                            onChange={(e) => setReply(e.target.value)}
+                            className={`${styles.input} w-full !min-h-30 py-2 !mb-2`}
+                        />
+                        <button
+                            className={`w-25 h-10 bg-blue-500 font-bold px-4 rounded-full text-white cursor-pointer ${reviewReplyLoading && "bg-blue-500/40 text-white/40"}`}
+                            onClick={handleReviewReplySubmit}
+                            disabled={reviewReplyLoading}
+                        >
+                            Submit
+                        </button>
+                    </div>
+                )
+            }
+
+
+
         </div>
     )
 };
@@ -295,10 +465,10 @@ const CommentItem = ({
     answerSuccess
 }: any) => {
     const [replyActive, setReplyActive] = useState(false);
-    // 👉 FIX: Moved the input answer variable down into the component scope to isolate text inputs
+
     const [localAnswer, setLocalAnswer] = useState("");
 
-    // 👉 FIX: Reset local text area when database response reports successful creation block
+
     useEffect(() => {
         if (answerSuccess) {
             setLocalAnswer("");
@@ -356,7 +526,7 @@ const CommentItem = ({
                                 <div className="pl-2">
                                     <div className="flex item-center gap-2">
                                         <h5 className="text-[18px] text-black dark:text-white">{reply?.user?.name}</h5>
-                                        <VscVerifiedFilled size={20} className="text-blue-400 mt-[4px]" />
+                                        {reply?.user.role === "admin" && <VscVerifiedFilled size={20} className="text-blue-400 mt-[4px]" />}
                                     </div>
                                     <p className="text-black dark:text-white">{reply?.answer}</p>
                                     <small className="text-[#ffffff83]">

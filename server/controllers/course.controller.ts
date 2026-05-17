@@ -77,7 +77,7 @@ export const getSingleCourse = CatchAsyncErrors(async (req: Request, res: Respon
     try {
         const courseId = req.params.id;
 
-        const isCacheExist = await redis.get(courseId as string);
+        const isCacheExist = null;
 
         if (isCacheExist) {
             const course = JSON.parse(isCacheExist);
@@ -302,7 +302,7 @@ export const addReview = CatchAsyncErrors(async (req: Request, res: Response, ne
         const courseId = req.params.id;
         const userCourseList = req.user?.courses;
 
-        const isCourseExist = userCourseList?.some((course: any) => course._id.toString() === courseId.toString());
+        const isCourseExist = userCourseList?.some((course: any) => course.courseId.toString() === courseId.toString());
 
         if (!isCourseExist) {
             return next(new ErrorHandler("You're not eligible to add review in this course.", 404));
@@ -335,12 +335,13 @@ export const addReview = CatchAsyncErrors(async (req: Request, res: Response, ne
 
         await course.save();
 
-        const notification = {
-            title: "New Review Received",
-            message: `${req.user?.name} has given a review in ${course.name}`
-        };
-
         //create notification
+
+        await notificationModel.create({
+            user: req.user?._id.toString(),
+            title: "New Review Received!",
+            message: `${req.user?.name} has given review in course ${course.name}`
+        });
 
         res.status(200).json({
             success: true,
