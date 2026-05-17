@@ -322,91 +322,91 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
                         )}
 
                     </>
+                    <div className="w-full">
+                        {courseData?.course?.reviews.map((item: any, index: number) => (
+                            <div key={index} className="w-full my-5">
+                                <div className="w-full flex">
+                                    <div className="shrink-0">
+                                        <Image
+                                            src={
+                                                item?.user?.avatar
+                                                    ? item.user.avatar.url
+                                                    : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                                            }
+                                            width={50}
+                                            height={50}
+                                            alt=""
+                                            className="w-[50px] h-[50px] rounded-full object-cover"
+                                        />
+                                    </div>
+
+                                    <div className="ml-2">
+                                        <h1 className="text-[18px] text-black dark:text-white">{item?.user.name}</h1>
+                                        <Ratings rating={item.rating} />
+                                        <p className="text-black dark:text-white">{item.comment}</p>
+                                        <small className="text-[#ffffff83]">
+                                            {format(item.createdAt)} •
+                                        </small>
+                                    </div>
+                                </div>
+                                {
+                                    user.role === "admin" && (
+                                        <span
+                                            className="text-black/60 dark:text-white/60 cursor-pointer text-sm"
+                                            onClick={() => {
+                                                setIsReviewReply(true);
+                                                setReviewId(item._id);
+                                                // Scroll directly to the bottom of the document body
+                                                setTimeout(() => {
+                                                    window.scrollTo({
+                                                        top: document.body.scrollHeight,
+                                                        behavior: "smooth"
+                                                    });
+                                                }, 100);
+                                            }}
+                                        >
+                                            Add Reply <BiMessage size={16} className="inline" />
+                                        </span>
+                                    )
+                                }
+
+                                {item.commentReplies.map((i: any, index: number) => (
+                                    <div key={index} className="w-full flex 800px:ml-16 my-5">
+                                        <div className="w-[50px] h-[50px] shrink-0">
+                                            <Image
+                                                src={
+                                                    i.user.avatar
+                                                        ? i.user.avatar.url
+                                                        : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
+                                                }
+                                                width={50}
+                                                height={50}
+                                                alt=""
+                                                className="w-[50px] h-[50px] rounded-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="pl-2">
+                                            <div className="flex gap-2 items-center">
+                                                <h5 className="text-[20px] text-black dark:text-white">{i.user.name}</h5>
+                                                <VscVerifiedFilled size={20} className="text-blue-400 mt-[4px]" />
+                                            </div>
+                                            <p className="text-black/80 dark:text-white/80">{i.question}</p>
+                                            <small className="text-[#ffffff83]">
+                                                {format(i.createdAt)} •
+                                            </small>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                        ))}
+                    </div>
                 </div>
             )}
             <br />
 
             <div className="w-full h-[1px] bg-gray-400/50 dark:bg-slate-400/20">
 
-            </div>
-            <div className="w-full">
-                {courseData?.course?.reviews.map((item: any, index: number) => (
-                    <div key={index} className="w-full my-5">
-                        <div className="w-full flex">
-                            <div className="shrink-0">
-                                <Image
-                                    src={
-                                        item?.user?.avatar
-                                            ? item.user.avatar.url
-                                            : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
-                                    }
-                                    width={50}
-                                    height={50}
-                                    alt=""
-                                    className="w-[50px] h-[50px] rounded-full object-cover"
-                                />
-                            </div>
-
-                            <div className="ml-2">
-                                <h1 className="text-[18px] text-black dark:text-white">{item?.user.name}</h1>
-                                <Ratings rating={item.rating} />
-                                <p className="text-black dark:text-white">{item.comment}</p>
-                                <small className="text-[#ffffff83]">
-                                    {format(item.createdAt)} •
-                                </small>
-                            </div>
-                        </div>
-                        {
-                            user.role === "admin" && (
-                                <span
-                                    className="text-black/60 dark:text-white/60 cursor-pointer text-sm"
-                                    onClick={() => {
-                                        setIsReviewReply(true);
-                                        setReviewId(item._id);
-                                        // Scroll directly to the bottom of the document body
-                                        setTimeout(() => {
-                                            window.scrollTo({
-                                                top: document.body.scrollHeight,
-                                                behavior: "smooth"
-                                            });
-                                        }, 100);
-                                    }}
-                                >
-                                    Add Reply <BiMessage size={16} className="inline" />
-                                </span>
-                            )
-                        }
-
-                        {item.commentReplies.map((i: any, index: number) => (
-                            <div key={index} className="w-full flex 800px:ml-16 my-5">
-                                <div className="w-[50px] h-[50px] shrink-0">
-                                    <Image
-                                        src={
-                                            i.user.avatar
-                                                ? i.user.avatar.url
-                                                : "https://res.cloudinary.com/dshp9jnuy/image/upload/v1665822253/avatars/nrxsg8sd9iy10bbsoenn.png"
-                                        }
-                                        width={50}
-                                        height={50}
-                                        alt=""
-                                        className="w-[50px] h-[50px] rounded-full object-cover"
-                                    />
-                                </div>
-                                <div className="pl-2">
-                                    <div className="flex gap-2 items-center">
-                                        <h5 className="text-[20px] text-black dark:text-white">{i.user.name}</h5>
-                                        <VscVerifiedFilled size={20} className="text-blue-400 mt-[4px]" />
-                                    </div>
-                                    <p className="text-black/80 dark:text-white/80">{i.question}</p>
-                                    <small className="text-[#ffffff83]">
-                                        {format(i.createdAt)} •
-                                    </small>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                ))}
             </div>
             {
                 isReviewReply && (
