@@ -1,5 +1,6 @@
 "use client"
-import { useGetAllCoursesQuery } from '@/redux/features/courses/coursesApi';
+
+import { useGetUserAllCoursesQuery } from '@/redux/features/courses/coursesApi';
 import { useGetHeroDataQuery } from '@/redux/features/layout/layoutApi';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
@@ -12,7 +13,7 @@ export default function CoursesPageWrapper() {
     const searchParams = useSearchParams();
     const search = searchParams?.get("title");
 
-    const { data, isLoading } = useGetAllCoursesQuery(undefined, {});
+    const { data, isLoading } = useGetUserAllCoursesQuery(undefined, {});
     const { data: categoriesData } = useGetHeroDataQuery("Categories", {});
 
     const [route, setRoute] = useState("Login");
@@ -20,6 +21,7 @@ export default function CoursesPageWrapper() {
     const [courses, setcourses] = useState([]);
     const [category, setCategory] = useState("All");
 
+    console.log(data?.courses);
 
     useEffect(() => {
         if (category === "All") {
@@ -78,7 +80,7 @@ export default function CoursesPageWrapper() {
                         <br />
                         <br />
 
-                        <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] 1500px:grid-cols-4 1500px:gap-[35px] mb-12 border-0 min-h-screen p-5">
+                        <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] xl:1500px:grid-cols-4 1500px:grid-cols-4 1500px:gap-[35px] 1500px:gap-[35px] mb-12 border-0 min-h-screen p-5">
                             {courses &&
                                 courses.map((item: any, index: number) => (
                                     <CourseCard item={item} key={index} />

@@ -11,6 +11,10 @@ import { AiFillStar, AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineStar } fr
 import { BiMessage } from 'react-icons/bi';
 import { VscVerifiedFilled } from 'react-icons/vsc';
 import { format } from 'timeago.js';
+import socketIO from "socket.io-client"
+
+const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI;
+const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 type Props = {
     data: any;
@@ -31,7 +35,7 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
     const [isReviewReply, setIsReviewReply] = useState(false);
     const [reviewId, setReviewId] = useState("");
 
-    // 👉 FIX: Use the exact hook name matching your api endpoint configuration
+
     const [addAnswer, { isSuccess: answerSuccess, error: answerError, isLoading: answerCreationLoading }] = useAddAnswerMutation();
     const [addNewQuestion, { isSuccess, error, isLoading: questionCreationLoading }] = useAddNewQuestionMutation();
     const [addReview, { isSuccess: reviewSuccess, error: reviewError, isLoading: reviewCreationLoading }] = useAddReviewMutation();
@@ -44,7 +48,7 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
 
     const isReviewExists = courseData?.course?.reviews?.some((item: any) => item.user?._id === user._id);
 
-    // 👉 FIX: Dynamic answer string acceptance from child inputs
+
     const handleAnswerSubmit = (answerText: string, qId: string) => {
         if (answerText.trim().length === 0) {
             toast.error("Answer cannot be empty");
@@ -97,6 +101,11 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
             setQuestion("");
             refetch();
             toast.success("Successfully Added Question");
+            socketId.emit("notification", {
+                title: "New Question Received",
+                message: `You have a new question in ${data?.[activeVideo].title}`,
+                userId: user?._id
+            });
         }
         if (answerSuccess) {
             toast.success("Answer added Successfully");
@@ -104,6 +113,11 @@ export default function CourseContentMedia({ data, id, activeVideo, setActiveVid
         }
         if (reviewSuccess) {
             toast.success("Review added Successfully");
+            socketId.emit("notification", {
+                title: "New Review Received",
+                message: `You have a new review in ${courseData?.course.title}`,
+                userId: user?._id
+            });
             refetch();
             courseDataRefetch();
         }
