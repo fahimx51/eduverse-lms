@@ -62,7 +62,7 @@ export default function CourseDetailsPage() {
                                 data={data.course}
                                 stripePromise={stripePromise}
                                 clientSecret={clientSecret}
-                                setRoute={setRoute} // Added in case your modal hooks need them
+                                setRoute={setRoute} 
                                 setOpen={setOpen}
                             />
                         )}

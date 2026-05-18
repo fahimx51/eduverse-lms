@@ -16,9 +16,11 @@ type Props = {
     data: any;
     stripePromise: any;
     clientSecret: string;
+    setRoute: any;
+    setOpen: any;
 }
 
-export default function CourseDetails({ data, stripePromise, clientSecret }: Props) {
+export default function CourseDetails({ data, stripePromise, clientSecret, setRoute, setOpen: openAuthModal }: Props) {
 
     const [open, setOpen] = useState(false);
     const { user } = useSelector((state: RootState) => state.auth);
@@ -30,7 +32,13 @@ export default function CourseDetails({ data, stripePromise, clientSecret }: Pro
     const isPurchased = user && user?.courses?.find((item: any) => item.courseId === data._id);
 
     const handleOrder = (e: any) => {
-        setOpen(true);
+        if (user) {
+            setOpen(true);
+        }
+        else {
+            setRoute("Login");
+            openAuthModal(true);
+        }
     }
 
     return (
