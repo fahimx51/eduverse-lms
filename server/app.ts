@@ -40,7 +40,10 @@ app.use(cookieParser());
 
 //cors 
 app.use(cors({
-    origin: [process.env.ORIGIN || "http://localhost:3000"],
+    origin: [
+        "https://eduverse01-lms.vercel.app",
+        "http://localhost:3000"
+    ],
     credentials: true
 }));
 
