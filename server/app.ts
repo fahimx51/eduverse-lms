@@ -12,22 +12,31 @@ import analyticRouter from './routes/analytics.route';
 import layoutRouter from './routes/layout.route';
 import { rateLimit } from 'express-rate-limit'
 
-const limiter = rateLimit({
+export const limiter = rateLimit({
+    // 15-minute window
     windowMs: 15 * 60 * 1000,
+    // Limit each IP to 100 requests per windowMs
     limit: process.env.NODE_ENV === 'development' ? 999999 : 100,
+
     standardHeaders: 'draft-8',
     legacyHeaders: false,
+
     message: {
         success: false,
-        message: "Too many requests, please try again after 15 minutes."
-    }
+        message: "Too many requests from this IP, please try again after 15 minutes."
+    },
+
+    validate: { xForwardedForHeader: true }
 });
+
+app.set('trust proxy', 1);
 
 //body parser
 app.use(express.json({ limit: '50mb' }));
 
 //cookie parser
 app.use(cookieParser());
+
 
 //cors 
 app.use(cors({
