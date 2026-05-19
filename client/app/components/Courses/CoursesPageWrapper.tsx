@@ -47,7 +47,7 @@ export default function CoursesPageWrapper() {
             {
                 isLoading ? <Loader /> :
                     <div>
-                        <div className="w-full flex items-center flex-wrap">
+                        <div className="w-full flex items-center flex-wrap mt-[100px]">
                             <div
                                 className={`h-[35px] text-white ${category === "All" ? "bg-[crimson]" : "bg-[#5050cb]"
                                     } m-3 px-3 rounded-[30px] flex items-center justify-center font-Poppins cursor-pointer`}
