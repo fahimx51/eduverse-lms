@@ -1,24 +1,30 @@
+"use client";
 import { styles } from '@/app/styles/style';
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react';
 import { toast } from 'react-hot-toast';
 import { RiAddCircleLine } from 'react-icons/ri';
 
-
 type Props = {
     benefits: { title: string }[];
-    setBenefits: (benefits: { title: string }[]) => void;
+    setBenefits: Dispatch<SetStateAction<{ title: string }[]>>;
     prerequisites: { title: string }[];
-    setPrerequisites: (prerequisites: { title: string }[]) => void;
+    setPrerequisites: Dispatch<SetStateAction<{ title: string }[]>>;
     active: number;
     setActive: (active: number) => void;
 }
 
-export default function CourseData({ benefits, setBenefits, prerequisites, setPrerequisites, active, setActive }: Props) {
+export default function CourseData({
+    benefits,
+    setBenefits,
+    prerequisites,
+    setPrerequisites,
+    active,
+    setActive
+}: Props) {
 
     const handleBenefitChange = (index: number, value: string) => {
         setBenefits((prevBenefits) => {
             const updatedBenefits = [...prevBenefits];
-            // Create a BRAND NEW object for this index
             updatedBenefits[index] = { ...updatedBenefits[index], title: value };
             return updatedBenefits;
         });
@@ -27,18 +33,17 @@ export default function CourseData({ benefits, setBenefits, prerequisites, setPr
     const handlePrerequisiteChange = (index: number, value: string) => {
         setPrerequisites((prevPrerequisites) => {
             const updatedPrerequisites = [...prevPrerequisites];
-            // Create a BRAND NEW object for this index
             updatedPrerequisites[index] = { ...updatedPrerequisites[index], title: value };
             return updatedPrerequisites;
         });
     };
 
     const handleAddBenefit = () => {
-        setBenefits([...benefits, { title: "" }])
+        setBenefits([...benefits, { title: "" }]);
     }
 
     const handleAddPrerequisite = () => {
-        setPrerequisites([...prerequisites, { title: "" }])
+        setPrerequisites([...prerequisites, { title: "" }]);
     }
 
     const prevButton = () => {
@@ -49,72 +54,66 @@ export default function CourseData({ benefits, setBenefits, prerequisites, setPr
         if (benefits[benefits.length - 1]?.title !== "" && prerequisites[prerequisites.length - 1]?.title !== "") {
             setActive(active + 1);
         } else {
-            toast.error("Please fill the fields for go to next!");
+            toast.error("Please fill the fields to go to the next step!");
         }
     };
 
     return (
         <div className='w-[80%] m-auto mt-24 block'>
             <div>
-                <label htmlFor="" className={`${styles.label}`}>
+                <label className={`${styles.label}`}>
                     What are the benefits for students in the course?
                 </label>
                 <br />
-                {
-                    benefits.map((benefit, index) => (
-                        <input
-                            key={index}
-                            type="text"
-                            name="Benefit"
-                            placeholder="You will be able to build an fullstack project"
-                            required
-                            value={benefit.title}
-                            className={`${styles.input} my-2`}
-                            onChange={(e) => handleBenefitChange(index, e.target.value)}
-                        />
-                    ))
-                }
+                {benefits.map((benefit, index) => (
+                    <input
+                        key={index}
+                        type="text"
+                        placeholder="You will be able to build a fullstack project"
+                        required
+                        value={benefit.title}
+                        className={`${styles.input} my-2`}
+                        onChange={(e) => handleBenefitChange(index, e.target.value)}
+                    />
+                ))}
                 <RiAddCircleLine
                     onClick={handleAddBenefit}
-                    className="h-6.5 w-6.5 mt-2 mb-5 text-black dark:text-white cursor-pointer"
+                    className="h-6 w-6 mt-2 mb-5 text-black dark:text-white cursor-pointer"
                 />
             </div>
 
             <div>
-                <label htmlFor="" className={`${styles.label}`}>
+                <label className={`${styles.label}`}>
                     What are the prerequisites for students in the course?
                 </label>
                 <br />
-                {
-                    prerequisites.map((prerequisite, index) => (
-                        <input
-                            key={index}
-                            type="text"
-                            name="prerequisite"
-                            placeholder="You will be able to build an fullstack project"
-                            required
-                            value={prerequisite.title}
-                            className={`${styles.input} my-2`}
-                            onChange={(e) => handlePrerequisiteChange(index, e.target.value)}
-                        />
-                    ))
-                }
+                {prerequisites.map((prerequisite, index) => (
+                    <input
+                        key={index}
+                        type="text"
+                        placeholder="You need basic knowledge of React"
+                        required
+                        value={prerequisite.title}
+                        className={`${styles.input} my-2`}
+                        onChange={(e) => handlePrerequisiteChange(index, e.target.value)}
+                    />
+                ))}
                 <RiAddCircleLine
                     onClick={handleAddPrerequisite}
-                    className="h-6.5 w-6.5 mt-2 mb-5 text-black dark:text-white cursor-pointer"
+                    className="h-6 w-6 mt-2 mb-5 text-black dark:text-white cursor-pointer"
                 />
             </div>
 
             <div className="w-full flex items-center justify-between">
                 <div
-                    className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8"
-                    onClick={() => prevButton()}
+                    className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+                    onClick={prevButton}
                 >
                     Prev
                 </div>
                 <div
-                    className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8"
-                    onClick={() => handleOptions()}
+                    className="w-full 800px:w-[180px] flex items-center justify-center h-[40px] bg-[#37a39a] text-center text-[#fff] rounded mt-8 cursor-pointer"
+                    onClick={handleOptions}
                 >
                     Next
                 </div>

@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material"; // Added IconButton
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { useTheme } from "next-themes";
 import { useGetAllCoursesQuery } from "@/redux/features/courses/coursesApi";
@@ -80,7 +80,10 @@ export default function AllCourses() {
             align: "center",
             headerAlign: "center",
             renderCell: (params) => (
-                <Link href={`/admin/edit-course/${params.row.id}`}
+                // FIXED: Wrapped in IconButton and used component={Link}
+                <IconButton
+                    component={Link}
+                    href={`/admin/edit-course/${params.row.id}`}
                     sx={{ minWidth: "unset", padding: "6px", borderRadius: "8px" }}
                     className={`${isDark ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
                 >
@@ -88,7 +91,7 @@ export default function AllCourses() {
                         size={18}
                         className={isDark ? "text-blue-400" : "text-blue-600"}
                     />
-                </Link>
+                </IconButton>
             ),
         },
         {
@@ -121,8 +124,6 @@ export default function AllCourses() {
 
     return (
         <div className="w-full pt-[80px] px-4 800px:px-8 mb-2">
-
-            {/* Page Header */}
             <div className="mb-6 flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-josefin font-bold text-black dark:text-white">
@@ -141,138 +142,12 @@ export default function AllCourses() {
                 <Loader />
             ) : (
                 <div className={`rounded-2xl overflow-hidden border ${isDark ? 'border-white/10 bg-[#111C43]' : 'border-slate-200 bg-white'} shadow-sm`}>
-                    <Box
-                        sx={{
-                            height: "calc(100vh - 220px)",
-                            width: "100%",
-
-                            "& .MuiDataGrid-root": {
-                                border: "none",
-                                outline: "none",
-                                fontFamily: "var(--font-Poppins)",
-                                color: isDark ? "#fff" : "#000",
-                                backgroundColor: "transparent",
-                            },
-
-                            "& .MuiDataGrid-topContainer": {
-                                backgroundColor: isDark ? "#1a2550 !important" : "#f8fafc !important",
-                                borderBottom: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                            },
-
-                            "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: isDark ? "#1a2550 !important" : "#f8fafc !important",
-                                borderBottom: "none",
-                            },
-
-                            "& .MuiDataGrid-columnHeader": {
-                                backgroundColor: isDark ? "#1a2550 !important" : "#f8fafc !important",
-                            },
-
-                            "& .MuiDataGrid-columnHeaderTitle": {
-                                fontWeight: "600",
-                                fontSize: "13px",
-                                color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.05em",
-                            },
-
-                            "& .MuiDataGrid-columnHeaderTitleContainer": {
-                                display: "flex",
-                                alignItems: "center",
-                            },
-
-                            "& .MuiDataGrid-sortIcon": {
-                                opacity: "1 !important",
-                                color: isDark ? "rgba(3, 73, 131, 0.8) !important" : "rgba(0,0,0,0.4) !important",
-                            },
-
-                            "& .MuiDataGrid-iconButtonContainer": {
-                                color: isDark ? "rgba(255,255,255,0.5) !important" : "rgba(0,0,0,0.5) !important",
-                            },
-
-                            "& .MuiDataGrid-iconSeparator": {
-                                display: "none",
-                            },
-
-                            "& .MuiDataGrid-menuIcon button": {
-                                color: isDark ? "#fff" : "#000",
-                            },
-
-                            "& .MuiDataGrid-row": {
-                                backgroundColor: "transparent",
-                                borderBottom: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid #f1f5f9",
-                                transition: "background-color 0.15s ease",
-                            },
-
-                            "& .MuiDataGrid-row:hover": {
-                                backgroundColor: isDark ? "rgba(255,255,255,0.03) !important" : "rgba(0,0,0,0.02) !important",
-                            },
-
-                            "& .MuiDataGrid-row.Mui-selected": {
-                                backgroundColor: isDark ? "rgba(59,91,219,0.12) !important" : "rgba(59,91,219,0.06) !important",
-                            },
-
-                            "& .MuiDataGrid-row.Mui-selected:hover": {
-                                backgroundColor: isDark ? "rgba(59,91,219,0.18) !important" : "rgba(59,91,219,0.09) !important",
-                            },
-
-                            "& .MuiDataGrid-cell": {
-                                borderBottom: "none",
-                                color: isDark ? "#fff" : "#000",
-                                display: "flex",
-                                alignItems: "center",
-                                fontSize: "14px",
-                            },
-
-                            "& .MuiDataGrid-cell:focus": {
-                                outline: "none",
-                            },
-
-                            "& .MuiDataGrid-columnHeader:focus": {
-                                outline: "none",
-                            },
-
-                            "& .MuiDataGrid-virtualScroller": {
-                                backgroundColor: "transparent",
-                            },
-
-                            "& .MuiDataGrid-footerContainer": {
-                                backgroundColor: isDark ? "#1a2550" : "#f8fafc",
-                                color: isDark ? "#fff" : "#000",
-                                borderTop: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid #e2e8f0",
-                            },
-
-                            "& .MuiTablePagination-root": {
-                                color: isDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)",
-                                fontFamily: "var(--font-Poppins)",
-                                fontSize: "13px",
-                            },
-
-                            "& .MuiSvgIcon-root": {
-                                color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
-                            },
-
-                            "& .MuiCheckbox-root": {
-                                color: isDark ? "rgba(255,255,255,0.3) !important" : "rgba(0,0,0,0.3) !important",
-                            },
-
-                            "& .MuiCheckbox-root.Mui-checked": {
-                                color: "#3b5bdb !important",
-                            },
-
-                            "& .MuiDataGrid-selectedRowCount": {
-                                color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)",
-                                fontFamily: "var(--font-Poppins)",
-                                fontSize: "13px",
-                            },
-                        }}
-                    >
+                    <Box sx={{ height: "calc(100vh - 220px)", width: "100%", "& .MuiDataGrid-root": { border: "none", outline: "none", fontFamily: "var(--font-Poppins)", color: isDark ? "#fff" : "#000", backgroundColor: "transparent" } }}>
                         <DataGrid
                             rows={rows}
                             columns={columns}
                             checkboxSelection
                             disableRowSelectionOnClick
-                            pageSizeOptions={[10, 25, 50, 100]}
                             initialState={{
                                 pagination: {
                                     paginationModel: { pageSize: 10 },
