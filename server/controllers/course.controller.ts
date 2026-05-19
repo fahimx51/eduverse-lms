@@ -60,7 +60,7 @@ export const editCourse = CatchAsyncErrors(async (req: Request, res: Response, n
             return next(new ErrorHandler('Course not found', 404));
         }
 
-        await redis.del(course._id.toString());
+        await redis.set(course._id.toString(), JSON.stringify(course));
 
         res.status(201).json({
             success: true,
@@ -77,7 +77,7 @@ export const getSingleCourse = CatchAsyncErrors(async (req: Request, res: Respon
     try {
         const courseId = req.params.id;
 
-        const isCacheExist = null;
+        const isCacheExist = await redis.get(courseId.toString());
 
         if (isCacheExist) {
             const course = JSON.parse(isCacheExist);
@@ -106,7 +106,7 @@ export const getSingleCourse = CatchAsyncErrors(async (req: Request, res: Respon
 //get all courses -- without purchasing
 export const getAllCourses = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const isCacheExist = null;
+        const isCacheExist = await redis.get("allCourses");
 
         if (isCacheExist) {
             const courses = JSON.parse(isCacheExist);
