@@ -15,10 +15,3 @@ export const store = configureStore({
 // Extract types
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-const initializeApp = async () => {
-    await store.dispatch(apiSlice.endpoints.loadUser.initiate({}, { forceRefetch: true }));
-};
-
-
-initializeApp();

@@ -21,7 +21,7 @@ const authSlice = createSlice({
         userLoggedIn: (state, action: PayloadAction<{ token?: string, user?: User }>) => {
             if (action.payload.token) {
                 state.token = action.payload.token;
-                localStorage.setItem("user", "true");
+                localStorage.setItem("token", action.payload.token);
             }
             if (action.payload.user) {
                 state.user = action.payload.user;
@@ -30,7 +30,8 @@ const authSlice = createSlice({
         userLoggedOut: (state) => {
             state.token = "";
             state.user = null;
-            localStorage.removeItem("user");
+
+            localStorage.removeItem("token");
         }
     }
 });

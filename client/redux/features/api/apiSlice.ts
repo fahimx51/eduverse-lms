@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { userLoggedIn } from '../auth/authSlice';
+import { userLoggedIn, userLoggedOut } from '../auth/authSlice';
 
 export const apiSlice = createApi({
     reducerPath: 'api',
@@ -21,24 +21,27 @@ export const apiSlice = createApi({
                     }));
                 }
                 catch (error) {
-                    console.log(error);
+                    dispatch(userLoggedOut())
                 }
             }
         }),
         loadUser: builder.query({
-            query: (data) => ({
+            query: () => ({
                 url: 'user/me',
                 method: 'GET',
             }),
+
             async onQueryStarted(arg, { queryFulfilled, dispatch }) {
                 try {
                     const result = await queryFulfilled;
+
                     dispatch(userLoggedIn({
-                        user: result.data.user
+                        user: result.data.user,
                     }));
-                }
-                catch (error) {
+                } catch (error) {
                     console.log(error);
+
+                    dispatch(userLoggedOut());
                 }
             }
         })
