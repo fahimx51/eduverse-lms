@@ -3,6 +3,7 @@ import Header from '../components/Header'
 import ProfileWrapper from '../components/profile/ProfileWrapper';
 
 import type { Metadata } from 'next'
+import Footer from '../components/Footer/Footer';
 
 export const metadata: Metadata = {
     title: 'Profile | Eduverse',
@@ -14,9 +15,12 @@ export default function Page() {
     return (
         <>
             <Protected>
-                <Header />
-                <ProfileWrapper>
-                </ProfileWrapper>
+                <div className="mt-[80px]">
+                    <Header />
+                    <ProfileWrapper>
+                    </ProfileWrapper>
+                    <Footer />
+                </div>
             </Protected>
         </>
     )

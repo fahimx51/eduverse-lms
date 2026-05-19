@@ -4,16 +4,20 @@ import { useGetUserAllCoursesQuery } from '@/redux/features/courses/coursesApi';
 import React, { useEffect, useState } from 'react'
 import CourseCard from './CourseCard';
 
+
 export default function Courses() {
 
     const { data, isLoading } = useGetUserAllCoursesQuery({});
 
+
     const [courses, setCourses] = useState([]);
 
     useEffect(() => {
+
         setCourses(data?.courses);
 
     }, [data]);
+
 
     return (
         <div>

@@ -12,7 +12,7 @@ courseRouter.put('/edit-course/:id', updateAccessToken, isAuthenticated, authori
 
 courseRouter.get('/get-course/:id', updateAccessToken, isAuthenticated, getSingleCourse);
 
-courseRouter.get('/get-courses', updateAccessToken, isAuthenticated, getAllCourses);
+courseRouter.get('/get-courses', getAllCourses);
 
 courseRouter.get('/get-course-content/:id', updateAccessToken, isAuthenticated, getCourseByUser);
 

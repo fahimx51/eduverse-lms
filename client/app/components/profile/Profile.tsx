@@ -10,6 +10,8 @@ import { redirect } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import ProfileInfo from './ProfileInfo';
 import ChangePassword from './ChangePassword';
+import EnrolledCourses from './EnrolledCourses';
+import { useGetUserAllCoursesQuery } from '@/redux/features/courses/coursesApi';
 
 export default function Profile() {
   const [scroll, setScroll] = useState(false);
@@ -37,6 +39,26 @@ export default function Profile() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+
+
+  const [courses, setCourses] = useState([]);
+
+  const { data, isLoading } = useGetUserAllCoursesQuery({});
+
+  useEffect(() => {
+    if (data?.courses && user?.courses) {
+
+      const enrolledIdsSet = new Set(user.courses.map((item: any) => item.courseId));
+
+      const commonCourses = data.courses.filter((course: any) =>
+        enrolledIdsSet.has(course._id)
+      );
+
+      setCourses(commonCourses);
+    }
+  }, [data, user]);
+
+
   return (
     // 1. Added py-[80px] to create a consistent "buffer" from the header for everything
     <div className='w-[85%] flex mx-auto py-[80px] gap-10'>
@@ -60,6 +82,10 @@ export default function Profile() {
         {active === 2 && user && (
           <ChangePassword />
         )}
+        {active === 3 && user && (
+          <EnrolledCourses courses={courses} />
+        )}
+
       </div>
 
     </div>

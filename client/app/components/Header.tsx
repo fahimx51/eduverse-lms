@@ -30,17 +30,14 @@ export default function Header() {
 
     useEffect(() => {
         const handleSocialAuth = async () => {
-            // 1. Only run if we have NextAuth data AND Redux is empty
             if (!user && data) {
                 try {
-                    // 2. Wait for the API to finish
                     await socialAuth({
                         email: data.user?.email,
                         name: data.user?.name,
                         avatar: data.user?.image
                     }).unwrap();
 
-                    // 3. ONLY toast once the promise resolves
                     toast.success("Logged in successfully");
                 } catch (error) {
                     console.error("Social auth failed:", error);
@@ -49,7 +46,7 @@ export default function Header() {
         };
 
         handleSocialAuth();
-    }, [data, user]); // Note: We do NOT put isSuccess here anymore
+    }, [data, user]);
 
 
     useEffect(() => {
@@ -62,9 +59,8 @@ export default function Header() {
         };
 
         window.addEventListener("scroll", handleScroll);
-        // Cleanup function to remove listener when component unmounts
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []); // Empty array means this runs ONLY ONCE
+    }, []);
 
     const handleClose = (e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
@@ -74,12 +70,21 @@ export default function Header() {
     }
 
     return (
-        <div className='w-full relative'>
-            <div className={`${active ? "dark:bg-opacity-50 dark:bg-gradient-to-b dark:from-gray-900 dark:to-black fixed top-0 left-0 w-full h-[80px] z-[80] border-b dark:border-[#ffffff1c] shadow-xl transition duration-500" : "w-full border-b dark:border-[#ffffff1c] h-[80px] z-[80] dark:shadow "}`}>
+        /* FIX 1: Forced wrapper container layout to fixed top-0 with an absolute 
+          maximum structural z-index priority (z-).
+        */
+        <div className="w-full h-[80px] fixed top-0 left-0 z-10000">
+            {/* FIX 2: Ensured backgrounds are 100% solid color blocks across BOTH layout 
+              states to act as an opaque shield against passing content cards.
+            */}
+            <div className={`${active
+                ? "w-full h-[80px] border-b dark:border-[#ffffff1c] shadow-xl transition duration-500 bg-white dark:bg-[#0f172a]"
+                : "w-full border-b dark:border-[#ffffff1c] h-[80px] dark:shadow bg-white dark:bg-[#0f172a]"
+                }`}>
                 <div className="w-[95%] 800px:w-[92%] m-auto py-2 h-full">
                     <div className='w-full h-[80px] flex items-center justify-between p-3'>
                         <div>
-                            <Link href="/" className='text-[25px] font-poppins font-[500] text-black dark:text-white' >
+                            <Link href="/" className='text-[25px] font-poppins font- text-black dark:text-white' >
                                 EduVerse
                             </Link>
                         </div>
@@ -106,10 +111,8 @@ export default function Header() {
                                             width={30}
                                             height={30}
                                             alt='profile_image'
-                                            className={`rounded-full cursor-pointer ${pathname === '/profile'  && "border-[2px] border-blue-600 dark:border-[#ffc107]" }`}
-                                        >
-
-                                        </Image>
+                                            className={`rounded-full cursor-pointer ${pathname === '/profile' && "border-[2px] border-blue-600 dark:border-[#ffc107]"}`}
+                                        />
                                     </Link>
                                 ) : (
                                     <HiOutlineUserCircle
@@ -128,12 +131,11 @@ export default function Header() {
                 {
                     openSidebar && (
                         <div
-                            className='fixed w-full h-screen top-0 left-0 z-[99999] dark:bg-[unset] bg-[#00000024]'
+                            className='fixed w-full h-screen top-0 left-0 z- dark:bg-[unset] bg-[#00000024]'
                             onClick={handleClose}
                             id="screen"
                         >
-
-                            <div className='w-[70%] fixed z-[99999] h-screen bg-white dark:bg-slate-900/90 backdrop-blur-sm top-0 right-0'>
+                            <div className='w-[70%] fixed z- h-screen bg-white dark:bg-slate-900/90 backdrop-blur-sm top-0 right-0'>
                                 <NavItems
                                     activeItem={activeItem}
                                     isMobile={true}
@@ -145,61 +147,44 @@ export default function Header() {
                                 />
                                 <p className='absolute bottom-2 text-[16px] px-2 pl-5 text-black dark:text-white'>Copyright © 2026 EduVerse</p>
                             </div>
-
                         </div>
                     )
                 }
             </div>
+
             {
-                route === "Login" && (
-                    <>
-                        {
-                            open && (
-                                <CustomModal
-                                    open={open}
-                                    setOpen={setOpen}
-                                    activeItem={activeItem}
-                                    component={Login}
-                                    setRoute={setRoute}
-                                />
-                            )
-                        }
-                    </>
+                route === "Login" && open && (
+                    <CustomModal
+                        open={open}
+                        setOpen={setOpen}
+                        activeItem={activeItem}
+                        component={Login}
+                        setRoute={setRoute}
+                    />
                 )
             }
 
             {
-                route === "Sign-Up" && (
-                    <>
-                        {
-                            open && (
-                                <CustomModal
-                                    open={open}
-                                    setOpen={setOpen}
-                                    activeItem={activeItem}
-                                    component={SignUp}
-                                    setRoute={setRoute}
-                                />
-                            )
-                        }
-                    </>
+                route === "Sign-Up" && open && (
+                    <CustomModal
+                        open={open}
+                        setOpen={setOpen}
+                        activeItem={activeItem}
+                        component={SignUp}
+                        setRoute={setRoute}
+                    />
                 )
             }
+
             {
-                route === "Verification" && (
-                    <>
-                        {
-                            open && (
-                                <CustomModal
-                                    open={open}
-                                    setOpen={setOpen}
-                                    activeItem={activeItem}
-                                    component={Verification}
-                                    setRoute={setRoute}
-                                />
-                            )
-                        }
-                    </>
+                route === "Verification" && open && (
+                    <CustomModal
+                        open={open}
+                        setOpen={setOpen}
+                        activeItem={activeItem}
+                        component={Verification}
+                        setRoute={setRoute}
+                    />
                 )
             }
         </div>

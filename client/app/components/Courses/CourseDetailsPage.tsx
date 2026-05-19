@@ -49,7 +49,7 @@ export default function CourseDetailsPage() {
                 isLoading ? (
                     <Loader />
                 ) : (
-                    <div>
+                    <div className="mt-[80px]">
                         <Header
                             route={route}
                             setRoute={setRoute}
