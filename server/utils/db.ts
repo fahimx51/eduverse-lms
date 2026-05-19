@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv/config';
 import mongoose from 'mongoose';
 
 const dbUrl: string = process.env.DB_URI || '';

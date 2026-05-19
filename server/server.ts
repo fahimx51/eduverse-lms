@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv/config';
 import { app } from './app';
 import { initSocketServer } from './socket';
 import connectDB from './utils/db';
