@@ -48,7 +48,6 @@ export const editCourse = CatchAsyncErrors(async (req: Request, res: Response, n
             };
         }
 
-
         const courseId = req.params.id;
 
         const course = await courseModel.findByIdAndUpdate(courseId,
@@ -61,6 +60,7 @@ export const editCourse = CatchAsyncErrors(async (req: Request, res: Response, n
         }
 
         await redis.set(course._id.toString(), JSON.stringify(course));
+        await redis.del("allCourses");
 
         res.status(201).json({
             success: true,
