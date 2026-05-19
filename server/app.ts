@@ -40,21 +40,7 @@ app.use(cookieParser());
 
 //cors 
 app.use(cors({
-    origin: function (origin, callback) {
-        console.log("DEBUG: Incoming request from origin:", origin);
-        const allowedOrigins = [
-            "https://eduverse-lms-g3sg.vercel.app",
-            "http://localhost:3000"
-        ];
-
-        // Allow the request if it's in the list OR if it's undefined (like some POST requests)
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            console.log("DEBUG: CORS BLOCKING ORIGIN:", origin);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: '*',
     credentials: true
 }));
 
