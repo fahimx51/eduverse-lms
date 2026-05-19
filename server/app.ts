@@ -40,7 +40,7 @@ app.use(cookieParser());
 
 //cors 
 app.use(cors({
-    origin: [process.env.ORIGIN || "http://localhost:3000"],
+    origin: [process.env.ORIGIN || "http://localhost:3000/", "https://eduverse-lms-g3sg.vercel.app/"],
     credentials: true
 }));
 
