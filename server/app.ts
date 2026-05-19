@@ -16,7 +16,7 @@ export const limiter = rateLimit({
     // 15-minute window
     windowMs: 15 * 60 * 1000,
     // Limit each IP to 100 requests per windowMs
-    limit: process.env.NODE_ENV === 'development' ? 999999 : 100,
+    limit: process.env.NODE_ENV === 'development' ? 99999999 : 100,
 
     standardHeaders: 'draft-8',
     legacyHeaders: false,
@@ -44,6 +44,9 @@ app.use(cors({
     credentials: true
 }));
 
+//limiter
+app.use(limiter);
+
 //api routes
 app.use('/api/user', userRouter);
 app.use('/api/course', courseRouter);
@@ -63,9 +66,5 @@ app.get("/api/test", (req: Request, res: Response, next: NextFunction) => {
 // unknown route
 
 
-app.use(limiter);
 // error middleware
 app.use(ErrorMiddleware);
-
-//2lDdpJHZK48f8yMb
-//eduverseDB
