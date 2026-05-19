@@ -9,6 +9,7 @@ interface ITokenOptions {
     httpOnly: boolean;
     sameSite: 'strict' | 'lax' | 'none' | undefined;
     secure?: boolean;
+    partitioned: boolean;
 }
 
 //parse environment variables
@@ -20,16 +21,18 @@ export const accessTokenOptions: ITokenOptions = {
     expires: new Date(Date.now() + accessTokenExpiresIn * 60 * 1000),
     maxAge: accessTokenExpiresIn * 60 * 1000,
     httpOnly: true,
-    sameSite: 'none', 
-    secure: true,     
+    sameSite: 'none',
+    secure: true,
+    partitioned: true,
 };
 
 export const refreshTokenOptions: ITokenOptions = {
     expires: new Date(Date.now() + refreshTokenExpiresIn * 24 * 60 * 60 * 1000),
     maxAge: refreshTokenExpiresIn * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    sameSite: 'none', 
-    secure: true,     
+    sameSite: 'none',
+    secure: true,
+    partitioned: true,
 };
 
 export const sendToken = (user: IUser, statusCode: number, res: Response) => {
@@ -40,9 +43,9 @@ export const sendToken = (user: IUser, statusCode: number, res: Response) => {
     redis.set(user._id.toString(), JSON.stringify(user) as any, "EX", 7 * 24 * 60 * 60);
 
     //only set secure flag in production
-    if (process.env.NODE_ENV === 'production') {
-        accessTokenOptions.secure = true;
-    }
+    // if (process.env.NODE_ENV === 'production') {
+    //     accessTokenOptions.secure = true;
+    // }
 
     res.cookie('accessToken', accessToken, accessTokenOptions);
     res.cookie('refreshToken', refreshToken, refreshTokenOptions);
