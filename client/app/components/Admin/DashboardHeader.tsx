@@ -13,8 +13,8 @@ const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI;
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 type Props = {
-    open: boolean;
-    setOpen: (open: boolean) => void;
+    open?: boolean;
+    setOpen?: (open: boolean) => void;
 }
 
 export default function DashboardHeader({ open, setOpen }: Props) {
