@@ -1,6 +1,15 @@
-import NextAuth from "next-auth";
+import NextAuth, { User, Account, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
+
+// Define the structure for your custom Session (optional but recommended)
+interface CustomSession extends Session {
+    user?: {
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
+    };
+}
 
 export const authOptions = {
     providers: [
@@ -14,13 +23,13 @@ export const authOptions = {
         }),
     ],
     callbacks: {
-        async signIn({ user, account }) {
-            // Check if they are using Social Login
-            if (account.provider === "google" || account.provider === "github") {
+        // Explicitly typed parameters to satisfy Vercel/TypeScript build
+        async signIn({ user, account }: { user: User; account: Account | null }) {
+            // Check if they are using Social Login using optional chaining
+            if (account?.provider === "google" || account?.provider === "github") {
                 try {
-                    // Send user data to your MERN backend (Node/Express)
-                    // This matches the 'social-auth' route you likely have in your controllers
-                    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}social-auth`, {
+                    // Send user data to your MERN backend
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}social-auth`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -31,6 +40,12 @@ export const authOptions = {
                             avatar: user.image,
                         }),
                     });
+
+                    if (!response.ok) {
+                        console.error("Backend returned error:", await response.text());
+                        return false;
+                    }
+
                     return true;
                 } catch (error) {
                     console.error("MERN Backend Social Auth Error:", error);
@@ -39,13 +54,13 @@ export const authOptions = {
             }
             return true;
         },
-        async session({ session, token }) {
+        async session({ session }: { session: CustomSession }) {
             // This ensures the user data is available in useSession() hook
             return session;
         },
     },
     secret: process.env.NEXTAUTH_SECRET,
-    debug: true,
+    debug: process.env.NODE_ENV === "development",
 };
 
 const handler = NextAuth(authOptions);
