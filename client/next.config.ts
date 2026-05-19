@@ -14,10 +14,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // We cast to any here to bypass the strict type definition of NextConfig
-} as any;
-
-(nextConfig as any).typescript = { ignoreBuildErrors: true };
-(nextConfig as any).eslint = { ignoreDuringBuilds: true };
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+};
 
 export default nextConfig;
