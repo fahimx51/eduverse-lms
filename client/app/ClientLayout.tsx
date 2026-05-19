@@ -45,28 +45,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     )
 }
 
+
+import { useSession } from "next-auth/react";
+
 const Custom = ({ children }: { children: React.ReactNode }) => {
-    const [mounted, setMounted] = useState(false);
+    const { status } = useSession(); // 'loading', 'authenticated', 'unauthenticated'
+    const { isLoading } = useLoadUserQuery({}, { refetchOnMountOrArgChange: true });
 
-    const hasSession = typeof window !== "undefined" ? localStorage.getItem("user") : null;
-
-    // 2. ALWAYS call the hook at the top level, but use 'skip'
-    const { isLoading, isError, data, isSuccess } = useLoadUserQuery({}, {
-        // If there's no session hint, skip the API call entirely
-        skip: !hasSession,
-        refetchOnMountOrArgChange: true
-    });
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-
-
-    if (!mounted) return null;
-
-    // Loading Logic: Only show loader if we have a session and are fetching
-    if (hasSession && isLoading && !isSuccess && !isError) {
+    // Wait until NextAuth has determined the session status
+    if (status === "loading" || isLoading) {
         return <Loader />;
     }
 
