@@ -432,6 +432,7 @@ export const deleteCourse = CatchAsyncErrors(async (req: Request, res: Response,
 export const generateVideoUrl = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { videoId } = req.body;
+        // console.log("Requested Video ID:", videoId);
         const response = await axios.post(
             `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
             { ttl: 300 },

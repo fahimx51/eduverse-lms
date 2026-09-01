@@ -12,7 +12,6 @@ require("dotenv").config();
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-
 //create a new order
 export const createOrder = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -54,9 +53,7 @@ export const createOrder = CatchAsyncErrors(async (req: Request, res: Response, 
             userId: req.user?._id
         };
 
-
         newOrder(data, next);
-
 
         const mailData = {
             order: {
@@ -69,7 +66,7 @@ export const createOrder = CatchAsyncErrors(async (req: Request, res: Response, 
                     year: 'numeric'
                 }),
             },
-        }
+        };
 
         try {
             await sendMail({
@@ -78,13 +75,16 @@ export const createOrder = CatchAsyncErrors(async (req: Request, res: Response, 
                 template: 'order-mail.ejs',
                 data: mailData
             });
-        }
-        catch (error: any) {
+        } catch (error: any) {
             return next(new ErrorHandler(error.message, 500));
         }
 
-        course.purchased = (course.purchased || 0) + 1;
-        await course.save();
+        // Use findByIdAndUpdate with $inc to bypass full schema validation for missing properties
+        await courseModel.findByIdAndUpdate(
+            courseId,
+            { $inc: { purchased: 1 } },
+            { new: true }
+        );
 
         user.courses.push({ courseId });
         await user.save();
@@ -92,7 +92,6 @@ export const createOrder = CatchAsyncErrors(async (req: Request, res: Response, 
         await redis.set(user._id.toString(), JSON.stringify(user));
 
         //create notification
-
         await notificationModel.create({
             user: req.user?._id.toString(),
             title: "New Order!",
@@ -103,8 +102,7 @@ export const createOrder = CatchAsyncErrors(async (req: Request, res: Response, 
             success: true,
             order: course
         });
-    }
-    catch (error: any) {
+    } catch (error: any) {
         return next(new ErrorHandler(error.message, 500));
     }
 });
@@ -113,13 +111,12 @@ export const createOrder = CatchAsyncErrors(async (req: Request, res: Response, 
 export const getAllOrders = CatchAsyncErrors(async (req: Request, res: Response, next: NextFunction) => {
     try {
         getAllOrderService(res);
-    }
-    catch (error: any) {
-        return next(new ErrorHandler(error.message, 500))
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
     }
 });
 
-// send stripe publishble key
+// send stripe publishable key
 export const sendStripePublishableKey = CatchAsyncErrors(
     async (req: Request, res: Response) => {
         res.status(200).json({
