@@ -28,7 +28,7 @@ export default function PolicyWrapper() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-[#0f172a] text-black dark:text-white transition-colors duration-200">
-            <Header />
+            {/* <Header /> */}
 
             {/* Main Content Wrapper Container - Pushed down by pt-[80px] to sit cleanly below the fixed header */}
             <div className="w-full pt-[80px]">

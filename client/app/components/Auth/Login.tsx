@@ -8,10 +8,12 @@ import { styles } from '../../styles/style'
 import { useLoginMutation } from '../../../redux/features/auth/authApi'
 import { toast } from 'react-hot-toast'
 import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 type Props = {
     setRoute: (route: string) => void,
-    setOpen: (open: boolean) => void
+    setOpen: (open: boolean) => void,
+    redirectUrl?: string | null
 }
 
 const schema = Yup.object({
@@ -19,9 +21,10 @@ const schema = Yup.object({
     password: Yup.string().required('Please enter your password').min(6, 'Password must be at least 6 characters long')
 })
 
-export default function Login({ setRoute, setOpen }: Props) {
+export default function Login({ setRoute, setOpen, redirectUrl }: Props) {
     const [show, setShow] = useState(false);
     const [login, { isLoading, isSuccess, error }] = useLoginMutation();
+    const router = useRouter();
 
     const formik = useFormik({
         initialValues: {
@@ -38,11 +41,19 @@ export default function Login({ setRoute, setOpen }: Props) {
         if (isSuccess) {
             toast.success("Login successfully!");
             setOpen(false);
+
+            // Redirect to target path if stored, otherwise stay put
+            if (redirectUrl) {
+                router.push(redirectUrl);
+            }
         }
         if (error) {
-            toast.error(error?.data?.message || "Something went wrong");
+            if ("data" in error) {
+                const errorData = error as any;
+                toast.error(errorData?.data?.message || "Something went wrong");
+            }
         }
-    }, [isSuccess, error]);
+    }, [isSuccess, error, redirectUrl, router, setOpen]);
 
     const { errors, touched, values, handleChange, handleSubmit } = formik;
 
@@ -51,6 +62,12 @@ export default function Login({ setRoute, setOpen }: Props) {
             <h1 className={styles.title}>
                 Login with EduVerse
             </h1>
+
+            {redirectUrl && (
+                <div className='bg-amber-100 dark:bg-amber-950/40 border border-amber-400 dark:border-amber-700 text-amber-800 dark:text-amber-300 px-3 py-2 rounded text-center text-[14px] my-3 font-poppins'>
+                    Please log in to access this page.
+                </div>
+            )}
 
             <form onSubmit={handleSubmit}>
                 <label
@@ -119,7 +136,7 @@ export default function Login({ setRoute, setOpen }: Props) {
                 <div className='flex items-center justify-center my-3'>
                     <FcGoogle
                         size={30}
-                        className='cursor-pointer mr-2 '
+                        className='cursor-pointer mr-2'
                         onClick={() => signIn('google')}
                     />
                     <AiFillGithub
@@ -140,6 +157,6 @@ export default function Login({ setRoute, setOpen }: Props) {
                     </span>
                 </h5>
             </form>
-        </div >
+        </div>
     )
 }

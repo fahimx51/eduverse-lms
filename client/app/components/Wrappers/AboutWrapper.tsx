@@ -28,7 +28,7 @@ export default function AboutWrapper() {
 
     return (
         <div className="min-h-screen mt-[80px] bg-white dark:bg-[#0f172a] text-black dark:text-white transition-colors duration-200">
-            <Header />
+            {/* <Header /> */}
 
             {/* Hero Section */}
             <section className="w-full max-w-7xl mx-auto px-4 pt-16 pb-12 sm:px-6 lg:px-8 text-center">

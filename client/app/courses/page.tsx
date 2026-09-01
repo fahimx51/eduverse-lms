@@ -14,7 +14,7 @@ export default function Page() {
     return (
         <Protected>
             <div className="w-full bg-white dark:bg-slate-950/90">
-                <Header />
+                {/* <Header /> */}
                 <CoursesPageWrapper />
             </div>
         </Protected>

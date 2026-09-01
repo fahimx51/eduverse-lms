@@ -30,6 +30,7 @@ export const authApi = apiSlice.injectEndpoints({
                     }));
                 }
                 catch (error) {
+                    console.log("failed to register");
                     console.log(error);
                 }
             },

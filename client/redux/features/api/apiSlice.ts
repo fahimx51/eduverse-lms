@@ -30,11 +30,11 @@ export const apiSlice = createApi({
                 url: 'user/me',
                 method: 'GET',
             }),
-
+            
             async onQueryStarted(arg, { queryFulfilled, dispatch }) {
                 try {
                     const result = await queryFulfilled;
-
+                    
                     dispatch(userLoggedIn({
                         user: result.data.user,
                     }));

@@ -21,7 +21,7 @@ export default function CoursesPageWrapper() {
     const [courses, setcourses] = useState([]);
     const [category, setCategory] = useState("All");
 
-    console.log(data?.courses);
+    // console.log(data?.courses);
 
     useEffect(() => {
         if (category === "All") {

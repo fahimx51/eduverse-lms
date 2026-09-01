@@ -16,7 +16,7 @@ export default function Page() {
         <>
             <Protected>
                 <div className="mt-[80px]">
-                    <Header />
+                    {/* <Header /> */}
                     <ProfileWrapper>
                     </ProfileWrapper>
                     <Footer />

@@ -4,8 +4,10 @@ import { useGetUserAllCoursesQuery } from '@/redux/features/courses/coursesApi';
 import React, { useEffect, useState } from 'react'
 import CourseCard from './CourseCard';
 
-
-export default function Courses() {
+type props = {
+    isHome?: boolean;
+}
+export default function Courses({ isHome }: props) {
 
     const { data, isLoading } = useGetUserAllCoursesQuery({});
 
@@ -14,7 +16,12 @@ export default function Courses() {
 
     useEffect(() => {
 
-        setCourses(data?.courses);
+        if (isHome) {
+            setCourses(data?.courses.slice(0, 6));
+        }
+        else {
+            setCourses(data?.courses);
+        }
 
     }, [data]);
 

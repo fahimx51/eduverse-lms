@@ -27,7 +27,7 @@ export default function FaqWrapper() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-[#0f172a] text-black dark:text-white transition-colors duration-200">
-            <Header />
+            {/* <Header /> */}
 
             {/* Content Container - Pushed down to sit safely below your fixed header wrapper */}
             <div className="w-full pt-[80px]">

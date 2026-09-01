@@ -2,7 +2,6 @@ import NextAuth, { User, Account, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 
-// Define the structure for your custom Session (optional but recommended)
 interface CustomSession extends Session {
     user?: {
         name?: string | null;
@@ -23,13 +22,11 @@ export const authOptions = {
         }),
     ],
     callbacks: {
-        // Explicitly typed parameters to satisfy Vercel/TypeScript build
         async signIn({ user, account }: { user: User; account: Account | null }) {
-            // Check if they are using Social Login using optional chaining
             if (account?.provider === "google" || account?.provider === "github") {
                 try {
-                    // Send user data to your MERN backend
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}social-auth`, {
+                    // Added "user/" to target your Express user.route path
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}user/social-auth`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -42,20 +39,20 @@ export const authOptions = {
                     });
 
                     if (!response.ok) {
-                        console.error("Backend returned error:", await response.text());
+                        const errorText = await response.text();
+                        console.error("Backend returned error:", response.status, errorText);
                         return false;
                     }
 
                     return true;
                 } catch (error) {
                     console.error("MERN Backend Social Auth Error:", error);
-                    return false; // Deny login if backend call fails
+                    return false;
                 }
             }
             return true;
         },
         async session({ session }: { session: CustomSession }) {
-            // This ensures the user data is available in useSession() hook
             return session;
         },
     },
